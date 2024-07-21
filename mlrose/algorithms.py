@@ -55,7 +55,7 @@ def hill_climb(
 
     best_fitness = -np.inf
     best_state = None
-    fitness_curve = [] if curve else None
+    fitness_curve = []
 
     for _ in range(restarts + 1):
         if init_state is None:
@@ -71,19 +71,21 @@ def hill_climb(
             next_state = problem.best_neighbor()
             next_fitness = problem.eval_fitness(next_state)
 
-            if next_fitness > problem.get_fitness():
+            current_fitness = problem.get_fitness()
+            if next_fitness > current_fitness:
                 problem.set_state(next_state)
             else:
                 break
 
             if curve:
-                fitness_curve.append(problem.get_fitness())
+                fitness_curve.append(current_fitness)
 
-        if problem.get_fitness() > best_fitness:
-            best_fitness = problem.get_fitness()
+        final_fitness = problem.get_fitness()
+        if final_fitness > best_fitness:
+            best_fitness = final_fitness
             best_state = problem.get_state()
 
-    best_fitness = problem.get_maximize() * best_fitness
+    best_fitness *= problem.get_maximize()
 
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
@@ -143,7 +145,7 @@ def random_hill_climb(
 
     best_fitness = -np.inf
     best_state = None
-    fitness_curve = [] if curve else None
+    fitness_curve = []
 
     for _ in range(restarts + 1):
         if init_state is None:
@@ -159,20 +161,22 @@ def random_hill_climb(
             next_state = problem.random_neighbor()
             next_fitness = problem.eval_fitness(next_state)
 
-            if next_fitness > problem.get_fitness():
+            current_fitness = problem.get_fitness()
+            if next_fitness > current_fitness:
                 problem.set_state(next_state)
                 attempts = 0
             else:
                 attempts += 1
 
             if curve:
-                fitness_curve.append(problem.get_fitness())
+                fitness_curve.append(current_fitness)
 
-        if problem.get_fitness() > best_fitness:
-            best_fitness = problem.get_fitness()
+        final_fitness = problem.get_fitness()
+        if final_fitness > best_fitness:
+            best_fitness = final_fitness
             best_state = problem.get_state()
 
-    best_fitness = problem.get_maximize() * best_fitness
+    best_fitness *= problem.get_maximize()
 
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
@@ -233,7 +237,7 @@ def simulated_annealing(
     else:
         problem.set_state(init_state)
 
-    fitness_curve = [] if curve else None
+    fitness_curve = []
     attempts = 0
     iters = 0
 
@@ -268,13 +272,13 @@ def simulated_annealing(
 
 
 def genetic_alg(
-    problem: DiscreteOpt | ContinuousOpt | TSPOpt,
-    pop_size: int = 200,
-    mutation_prob: float = 0.1,
-    max_attempts: int = 10,
-    max_iters: int | float = np.inf,
-    curve: bool = False,
-    random_state: int = None,
+        problem: DiscreteOpt | ContinuousOpt | TSPOpt,
+        pop_size: int = 200,
+        mutation_prob: float = 0.1,
+        max_attempts: int = 10,
+        max_iters: int | float = np.inf,
+        curve: bool = False,
+        random_state: int = None,
 ) -> tuple[np.ndarray, float] | tuple[np.ndarray, float, np.ndarray]:
     """Use a standard genetic algorithm to find the optimum for a given optimization problem.
 
@@ -334,29 +338,25 @@ def genetic_alg(
     while attempts < max_attempts and iters < max_iters:
         iters += 1
         problem.eval_mate_probs()
-        next_gen = []
 
-        for _ in range(pop_size):
-            selected = np.random.choice(pop_size, size=2, p=problem.get_mate_probs())
-            parent_1 = problem.get_population()[selected[0]]
-            parent_2 = problem.get_population()[selected[1]]
-            child = problem.reproduce(parent_1, parent_2, mutation_prob)
-            next_gen.append(child)
+        selected = np.random.choice(pop_size, size=(pop_size, 2), p=problem.get_mate_probs())
+        parents = problem.get_population()[selected]
+        children = np.array([problem.reproduce(p[0], p[1], mutation_prob) for p in parents])
 
-        next_gen = np.array(next_gen)
-        problem.set_population(next_gen)
+        problem.set_population(children)
 
         next_state = problem.best_child()
         next_fitness = problem.eval_fitness(next_state)
 
-        if next_fitness > problem.get_fitness():
+        current_fitness = problem.get_fitness()
+        if next_fitness > current_fitness:
             problem.set_state(next_state)
             attempts = 0
         else:
             attempts += 1
 
         if curve:
-            fitness_curve.append(problem.get_fitness())
+            fitness_curve.append(current_fitness)
 
     best_fitness = problem.get_maximize() * problem.get_fitness()
     best_state = problem.get_state()
@@ -431,7 +431,7 @@ def mimic(
     if isinstance(random_state, int) and random_state > 0:
         np.random.seed(random_state)
 
-    fitness_curve = [] if curve else None
+    fitness_curve = []
     if not isinstance(fast_mimic, bool):
         raise ValueError("fast_mimic mode must be a boolean.")
     else:
@@ -451,14 +451,15 @@ def mimic(
         next_state = problem.best_child()
         next_fitness = problem.eval_fitness(next_state)
 
-        if next_fitness > problem.get_fitness():
+        current_fitness = problem.get_fitness()
+        if next_fitness > current_fitness:
             problem.set_state(next_state)
             attempts = 0
         else:
             attempts += 1
 
         if curve:
-            fitness_curve.append(problem.get_fitness())
+            fitness_curve.append(current_fitness)
 
     best_fitness = problem.get_maximize() * problem.get_fitness()
     best_state = problem.get_state().astype(int)
