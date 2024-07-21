@@ -54,7 +54,7 @@ class OptProb:
 
         Returns
         -------
-        best: array
+        best: np.ndarray
             State vector defining best child.
         """
         best = self.population[np.argmax(self.pop_fitness)]
@@ -66,7 +66,7 @@ class OptProb:
 
         Returns
         -------
-        best: array
+        best: np.ndarray
             State vector defining best neighbor.
         """
         fitness_list = []
@@ -79,12 +79,12 @@ class OptProb:
 
         return best
 
-    def eval_fitness(self, state):
+    def eval_fitness(self, state: np.ndarray):
         """Evaluate the fitness of a state vector.
 
         Parameters
         ----------
-        state: array
+        state: np.ndarray
             State vector for evaluation.
 
         Returns
@@ -139,7 +139,7 @@ class OptProb:
 
         Returns
         -------
-        self.mate_probs: array.
+        self.mate_probs: np.ndarray.
             Numpy array containing mate probabilities of the current
             population.
         """
@@ -160,7 +160,7 @@ class OptProb:
 
         Returns
         -------
-        self.pop_fitness: array
+        self.pop_fitness: np.ndarray
             Numpy array containing the fitness values for the current
             population.
         """
@@ -171,7 +171,7 @@ class OptProb:
 
         Returns
         -------
-        self.population: array
+        self.population: np.ndarray
             Numpy array containing current population.
         """
         return self.population
@@ -181,7 +181,7 @@ class OptProb:
 
         Returns
         -------
-        self.state: array
+        self.state: np.ndarray
             Current state vector.
         """
         return self.state
@@ -192,7 +192,7 @@ class OptProb:
 
         Parameters
         ----------
-        new_population: array
+        new_population: np.ndarray
             Numpy array containing new population.
         """
         self.population = new_population
@@ -206,14 +206,14 @@ class OptProb:
 
         self.pop_fitness = np.array(pop_fitness)
 
-    def set_state(self, new_state):
+    def set_state(self, new_state: np.ndarray):
         """
         Change the current state vector to a specified value
         and get its fitness.
 
         Parameters
         ----------
-        new_state: array
+        new_state: np.ndarray
             New state vector value.
         """
         if len(new_state) != self.length:
@@ -471,7 +471,7 @@ class DiscreteOpt(OptProb):
 
         Returns
         -------
-        self.keep_sample: array
+        self.keep_sample: np.ndarray
             Numpy array containing samples with fitness in the top keep_pct
             percentile.
         """
@@ -492,7 +492,7 @@ class DiscreteOpt(OptProb):
 
         Returns
         -------
-        state: array
+        state: np.ndarray
             Randomly generated state vector.
         """
         state = np.random.randint(0, self.max_val, self.length)
@@ -504,7 +504,7 @@ class DiscreteOpt(OptProb):
 
         Returns
         -------
-        neighbor: array
+        neighbor: np.ndarray
             State vector of random neighbor.
         """
         neighbor = np.copy(self.state)
@@ -554,9 +554,9 @@ class DiscreteOpt(OptProb):
 
         Parameters
         ----------
-        parent_1: array
+        parent_1: np.ndarray
             State vector for parent 1.
-        parent_2: array
+        parent_2: np.ndarray
             State vector for parent 2.
         mutation_prob: float
             Probability of a mutation at each state element during
@@ -564,7 +564,7 @@ class DiscreteOpt(OptProb):
 
         Returns
         -------
-        child: array
+        child: np.ndarray
             Child state vector produced from parents 1 and 2.
         """
         if len(parent_1) != self.length or len(parent_2) != self.length:
@@ -615,7 +615,7 @@ class DiscreteOpt(OptProb):
 
         Returns
         -------
-        new_sample: array
+        new_sample: np.ndarray
             Numpy array containing new sample.
         """
         if sample_size <= 0:
@@ -754,7 +754,7 @@ class ContinuousOpt(OptProb):
 
         Returns
         -------
-        state: array
+        state: np.ndarray
             Randomly generated state vector.
         """
         state = np.random.uniform(self.min_val, self.max_val, self.length)
@@ -766,7 +766,7 @@ class ContinuousOpt(OptProb):
 
         Returns
         -------
-        neighbor: array
+        neighbor: np.ndarray
             State vector of random neighbor.
         """
         while True:
@@ -820,10 +820,10 @@ class ContinuousOpt(OptProb):
 
         Parameters
         ----------
-        parent_1: array
+        parent_1: np.ndarray
             State vector for parent 1.
 
-        parent_2: array
+        parent_2: np.ndarray
             State vector for parent 2.
 
         mutation_prob: float
@@ -832,7 +832,7 @@ class ContinuousOpt(OptProb):
 
         Returns
         -------
-        child: array
+        child: np.ndarray
             Child state vector produced from parents 1 and 2.
         """
         if len(parent_1) != self.length or len(parent_2) != self.length:
@@ -871,12 +871,12 @@ class ContinuousOpt(OptProb):
 
         Parameters
         ----------
-        updates: array
+        updates: np.ndarray
             Update array.
 
         Returns
         -------
-        updated_state: array
+        updated_state: np.ndarray
             Current state adjusted for updates.
         """
         if len(updates) != self.length:
@@ -947,12 +947,12 @@ class TSPOpt(DiscreteOpt):
 
         Parameters
         ----------
-        probs: array
+        probs: np.ndarray
             Vector of probabilities that may or may not sum to 1.
 
         Returns
         -------
-        adj_probs: array
+        adj_probs: np.ndarray
             Vector of probabilities that sums to 1. Returns a zero vector if
             sum(probs) = 0.
         """
@@ -981,7 +981,7 @@ class TSPOpt(DiscreteOpt):
 
         Returns
         -------
-        state: array
+        state: np.ndarray
             Randomly generated state vector.
         """
         state = np.random.permutation(self.length)
@@ -993,7 +993,7 @@ class TSPOpt(DiscreteOpt):
 
         Returns
         -------
-        state: array
+        state: np.ndarray
             State vector of MIMIC random sample.
         """
         remaining = list(np.arange(self.length))
@@ -1034,7 +1034,7 @@ class TSPOpt(DiscreteOpt):
 
         Returns
         -------
-        neighbor: array
+        neighbor: np.ndarray
             State vector of random neighbor.
         """
         neighbor = np.copy(self.state)
@@ -1050,10 +1050,10 @@ class TSPOpt(DiscreteOpt):
 
         Parameters
         ----------
-        parent_1: array
+        parent_1: np.ndarray
             State vector for parent 1.
 
-        parent_2: array
+        parent_2: np.ndarray
             State vector for parent 2.
 
         mutation_prob: float
@@ -1062,7 +1062,7 @@ class TSPOpt(DiscreteOpt):
 
         Returns
         -------
-        child: array
+        child: np.ndarray
             Child state vector produced from parents 1 and 2.
         """
         if len(parent_1) != self.length or len(parent_2) != self.length:
@@ -1107,7 +1107,7 @@ class TSPOpt(DiscreteOpt):
 
         Returns
         -------
-        new_sample: array
+        new_sample: np.ndarray
             Numpy array containing new sample.
         """
         if sample_size <= 0:

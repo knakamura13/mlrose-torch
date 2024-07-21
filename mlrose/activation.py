@@ -1,4 +1,4 @@
-""" Neural network activation functions."""
+"""Neural network activation functions."""
 
 # Author: Genevieve Hayes
 # License: BSD 3 clause
