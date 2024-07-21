@@ -6,21 +6,21 @@
 import numpy as np
 
 
-def identity(x, deriv=False):
+def identity(x: np.ndarray, deriv: bool = False) -> np.ndarray:
     """Linear activation function
 
     Parameters
     ----------
-    x: array
+    x : np.ndarray
         Array containing input data.
 
-    deriv: bool, default: False
+    deriv : bool, default: False
         Whether to return the function or its derivative.
         Set True for derivative.
 
     Returns
     -------
-    fx: array
+    np.ndarray
         Value of activation function at x
     """
     if not deriv:
@@ -31,21 +31,21 @@ def identity(x, deriv=False):
     return fx
 
 
-def relu(x, deriv=False):
+def relu(x: np.ndarray, deriv: bool = False) -> np.ndarray:
     """ReLU activation function
 
     Parameters
     ----------
-    x: array
+    x : np.ndarray
         Array containing input data.
 
-    deriv: bool, default: False
+    deriv : bool, default: False
         Whether to return the function or its derivative.
         Set True for derivative.
 
     Returns
     -------
-    fx: array
+    np.ndarray
         Value of activation function at x
     """
     fx = np.copy(x)
@@ -57,21 +57,21 @@ def relu(x, deriv=False):
     return fx
 
 
-def sigmoid(x, deriv=False):
+def sigmoid(x: np.ndarray, deriv: bool = False) -> np.ndarray:
     """Sigmoid activation function
 
     Parameters
     ----------
-    x: array
+    x : np.ndarray
         Array containing input data.
 
-    deriv: bool, default: False
+    deriv : bool, default: False
         Whether to return the function or its derivative.
         Set True for derivative.
 
     Returns
     -------
-    fx: array
+    np.ndarray
         Value of activation function at x
     """
     fx = 1 / (1 + np.exp(-x))
@@ -82,17 +82,17 @@ def sigmoid(x, deriv=False):
     return fx
 
 
-def softmax(x):
+def softmax(x: np.ndarray) -> np.ndarray:
     """Softmax activation function
 
     Parameters
     ----------
-    x: array
+    x : np.ndarray
         Array containing input data.
 
     Returns
     -------
-    fx: array
+    np.ndarray
         Value of activation function at x
     """
     max_prob = np.max(x, axis=1).reshape((-1, 1))
@@ -103,21 +103,21 @@ def softmax(x):
     return fx
 
 
-def tanh(x, deriv=False):
+def tanh(x: np.ndarray, deriv: bool = False) -> np.ndarray:
     """Hyperbolic tan activation function
 
     Parameters
     ----------
-    x: array
+    x : np.ndarray
         Array containing input data.
 
-    deriv: bool, default: False
+    deriv : bool, default: False
         Whether to return the function or its derivative.
         Set True for derivative.
 
     Returns
     -------
-    fx: array
+    np.ndarray
         Value of activation function at x
     """
     fx = np.tanh(x)
