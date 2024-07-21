@@ -5,10 +5,20 @@
 
 import unittest
 import numpy as np
-from mlrose import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
-                    Knapsack, TravellingSales, Queens, MaxKColor,
-                    CustomFitness)
+from mlrose import (
+    OneMax,
+    FlipFlop,
+    FourPeaks,
+    SixPeaks,
+    ContinuousPeaks,
+    Knapsack,
+    TravellingSales,
+    Queens,
+    MaxKColor,
+    CustomFitness,
+)
 from mlrose.fitness import head, tail, max_run
+
 # The above functions are not automatically imported at initialization, so
 # must be imported explicitly from fitness.py.
 
@@ -148,16 +158,25 @@ class TestFitness(unittest.TestCase):
 
         state = np.array([0, 1, 4, 3, 2])
 
-        assert (round(TravellingSales(coords=coords).evaluate(state), 4)
-                == 13.8614)
+        assert round(TravellingSales(coords=coords).evaluate(state), 4) == 13.8614
 
     @staticmethod
     def test_travelling_sales_dists():
         """Test TravellingSales fitness function for case where distances
         between node pairs are specified."""
 
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
-                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        dists = [
+            (0, 1, 3),
+            (0, 2, 5),
+            (0, 3, 1),
+            (0, 4, 7),
+            (1, 3, 6),
+            (4, 1, 9),
+            (2, 3, 8),
+            (2, 4, 2),
+            (3, 2, 8),
+            (3, 4, 4),
+        ]
 
         state = np.array([0, 1, 4, 3, 2])
 
@@ -167,8 +186,18 @@ class TestFitness(unittest.TestCase):
     def test_travelling_sales_invalid():
         """Test TravellingSales fitness function for invalid tour"""
 
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
-                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        dists = [
+            (0, 1, 3),
+            (0, 2, 5),
+            (0, 3, 1),
+            (0, 4, 7),
+            (1, 3, 6),
+            (4, 1, 9),
+            (2, 3, 8),
+            (2, 4, 2),
+            (3, 2, 8),
+            (3, 4, 4),
+        ]
 
         state = np.array([0, 1, 2, 3, 4])
 
@@ -191,14 +220,15 @@ class TestFitness(unittest.TestCase):
     @staticmethod
     def test_custom_fitness():
         """Test CustomFitness fitness function"""
+
         # Define custom finess function
         def cust_fn(state, c):
-            return c*np.sum(state)
+            return c * np.sum(state)
 
         state = np.array([1, 2, 3, 4, 5])
-        kwargs = {'c': 10}
+        kwargs = {"c": 10}
         assert CustomFitness(cust_fn, **kwargs).evaluate(state) == 150
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

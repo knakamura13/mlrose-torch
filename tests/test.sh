@@ -1,5 +1,8 @@
 #!/bin/bash
 
+ROOT_PATH=$(pwd)/..
+export PYTHONPATH=$ROOT_PATH
+
 echo "Running tests on test_activation.py"
 python test_activation.py
 

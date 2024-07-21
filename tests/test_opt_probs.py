@@ -15,6 +15,9 @@ from mlrose.neural import NetworkWeights
 from mlrose.activation import identity
 from mlrose.opt_probs import OptProb
 
+SEED = 0
+np.random.seed(SEED)
+
 
 class TestOptProb(unittest.TestCase):
     """Tests for OptProb class."""
@@ -28,8 +31,7 @@ class TestOptProb(unittest.TestCase):
         x = np.array([0, 1, 2, 3, 4])
         problem.set_state(x)
 
-        assert (np.array_equal(problem.get_state(), x)
-                and problem.get_fitness() == 10)
+        assert np.array_equal(problem.get_state(), x) and problem.get_fitness() == 10
 
     @staticmethod
     def test_set_state_min():
@@ -40,8 +42,7 @@ class TestOptProb(unittest.TestCase):
         x = np.array([0, 1, 2, 3, 4])
         problem.set_state(x)
 
-        assert (np.array_equal(problem.get_state(), x)
-                and problem.get_fitness() == -10)
+        assert np.array_equal(problem.get_state(), x) and problem.get_fitness() == -10
 
     @staticmethod
     def test_set_population_max():
@@ -49,21 +50,26 @@ class TestOptProb(unittest.TestCase):
 
         problem = OptProb(5, OneMax(), maximize=True)
 
-        pop = np.array([[0, 0, 0, 0, 1],
-                        [1, 0, 1, 0, 1],
-                        [1, 1, 1, 1, 0],
-                        [1, 0, 0, 0, 1],
-                        [100, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1],
-                        [0, 0, 0, 0, -50]])
+        pop = np.array(
+            [
+                [0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [100, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1],
+                [0, 0, 0, 0, -50],
+            ]
+        )
 
         pop_fit = np.array([1, 3, 4, 2, 100, 0, 5, -50])
 
         problem.set_population(pop)
 
-        assert (np.array_equal(problem.get_population(), pop)
-                and np.array_equal(problem.get_pop_fitness(), pop_fit))
+        assert np.array_equal(problem.get_population(), pop) and np.array_equal(
+            problem.get_pop_fitness(), pop_fit
+        )
 
     @staticmethod
     def test_set_population_min():
@@ -71,21 +77,26 @@ class TestOptProb(unittest.TestCase):
 
         problem = OptProb(5, OneMax(), maximize=False)
 
-        pop = np.array([[0, 0, 0, 0, 1],
-                        [1, 0, 1, 0, 1],
-                        [1, 1, 1, 1, 0],
-                        [1, 0, 0, 0, 1],
-                        [100, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1],
-                        [0, 0, 0, 0, -50]])
+        pop = np.array(
+            [
+                [0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [100, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1],
+                [0, 0, 0, 0, -50],
+            ]
+        )
 
-        pop_fit = -1.0*np.array([1, 3, 4, 2, 100, 0, 5, -50])
+        pop_fit = -1.0 * np.array([1, 3, 4, 2, 100, 0, 5, -50])
 
         problem.set_population(pop)
 
-        assert (np.array_equal(problem.get_population(), pop)
-                and np.array_equal(problem.get_pop_fitness(), pop_fit))
+        assert np.array_equal(problem.get_population(), pop) and np.array_equal(
+            problem.get_pop_fitness(), pop_fit
+        )
 
     @staticmethod
     def test_best_child_max():
@@ -93,14 +104,18 @@ class TestOptProb(unittest.TestCase):
 
         problem = OptProb(5, OneMax(), maximize=True)
 
-        pop = np.array([[0, 0, 0, 0, 1],
-                        [1, 0, 1, 0, 1],
-                        [1, 1, 1, 1, 0],
-                        [1, 0, 0, 0, 1],
-                        [100, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1],
-                        [0, 0, 0, 0, -50]])
+        pop = np.array(
+            [
+                [0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [100, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1],
+                [0, 0, 0, 0, -50],
+            ]
+        )
 
         problem.set_population(pop)
         x = problem.best_child()
@@ -113,14 +128,18 @@ class TestOptProb(unittest.TestCase):
 
         problem = OptProb(5, OneMax(), maximize=False)
 
-        pop = np.array([[0, 0, 0, 0, 1],
-                        [1, 0, 1, 0, 1],
-                        [1, 1, 1, 1, 0],
-                        [1, 0, 0, 0, 1],
-                        [100, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1],
-                        [0, 0, 0, 0, -50]])
+        pop = np.array(
+            [
+                [0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [100, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1],
+                [0, 0, 0, 0, -50],
+            ]
+        )
 
         problem.set_population(pop)
         x = problem.best_child()
@@ -133,14 +152,18 @@ class TestOptProb(unittest.TestCase):
 
         problem = OptProb(5, OneMax(), maximize=True)
 
-        pop = np.array([[0, 0, 0, 0, 1],
-                        [1, 0, 1, 0, 1],
-                        [1, 1, 1, 1, 0],
-                        [1, 0, 0, 0, 1],
-                        [100, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1],
-                        [0, 0, 0, 0, -50]])
+        pop = np.array(
+            [
+                [0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [100, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1],
+                [0, 0, 0, 0, -50],
+            ]
+        )
 
         problem.neighbors = pop
         x = problem.best_neighbor()
@@ -153,14 +176,18 @@ class TestOptProb(unittest.TestCase):
 
         problem = OptProb(5, OneMax(), maximize=False)
 
-        pop = np.array([[0, 0, 0, 0, 1],
-                        [1, 0, 1, 0, 1],
-                        [1, 1, 1, 1, 0],
-                        [1, 0, 0, 0, 1],
-                        [100, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1],
-                        [0, 0, 0, 0, -50]])
+        pop = np.array(
+            [
+                [0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [100, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1],
+                [0, 0, 0, 0, -50],
+            ]
+        )
 
         problem.neighbors = pop
         x = problem.best_neighbor()
@@ -192,12 +219,16 @@ class TestOptProb(unittest.TestCase):
         """Test eval_mate_probs method"""
 
         problem = OptProb(5, OneMax(), maximize=True)
-        pop = np.array([[0, 0, 0, 0, 1],
-                        [1, 0, 1, 0, 1],
-                        [1, 1, 1, 1, 0],
-                        [1, 0, 0, 0, 1],
-                        [0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1]])
+        pop = np.array(
+            [
+                [0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1],
+            ]
+        )
 
         problem.set_population(pop)
         problem.eval_mate_probs()
@@ -211,18 +242,21 @@ class TestOptProb(unittest.TestCase):
         """Test eval_mate_probs method when all states have zero fitness"""
 
         problem = OptProb(5, OneMax(), maximize=True)
-        pop = np.array([[0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0]])
+        pop = np.array(
+            [
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+            ]
+        )
 
         problem.set_population(pop)
         problem.eval_mate_probs()
 
-        probs = np.array([0.16667, 0.16667, 0.16667, 0.16667,
-                          0.16667, 0.16667])
+        probs = np.array([0.16667, 0.16667, 0.16667, 0.16667, 0.16667, 0.16667])
 
         assert np.allclose(problem.get_mate_probs(), probs, atol=0.00001)
 
@@ -236,30 +270,34 @@ class TestDiscreteOpt(unittest.TestCase):
 
         problem = DiscreteOpt(5, OneMax(), maximize=True)
 
-        pop = np.array([[0, 0, 0, 0, 1],
-                        [1, 0, 1, 0, 1],
-                        [1, 1, 1, 1, 0],
-                        [1, 0, 0, 0, 1],
-                        [0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1]])
+        pop = np.array(
+            [
+                [0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1],
+            ]
+        )
 
         problem.keep_sample = pop
         problem.eval_node_probs()
 
         parent = np.array([2, 0, 1, 0])
-        probs = np.array([[[0.33333, 0.66667],
-                           [0.33333, 0.66667]],
-                          [[1.0, 0.0],
-                           [0.33333, 0.66667]],
-                          [[1.0, 0.0],
-                           [0.25, 0.75]],
-                          [[1.0, 0.0],
-                           [0.0, 1.0]],
-                          [[0.5, 0.5],
-                           [0.25, 0.75]]])
+        probs = np.array(
+            [
+                [[0.33333, 0.66667], [0.33333, 0.66667]],
+                [[1.0, 0.0], [0.33333, 0.66667]],
+                [[1.0, 0.0], [0.25, 0.75]],
+                [[1.0, 0.0], [0.0, 1.0]],
+                [[0.5, 0.5], [0.25, 0.75]],
+            ]
+        )
 
-        assert (np.allclose(problem.node_probs, probs, atol=0.00001)
-                and np.array_equal(problem.parent_nodes, parent))
+        assert np.allclose(problem.node_probs, probs, atol=0.00001) and np.array_equal(
+            problem.parent_nodes, parent
+        )
 
     @staticmethod
     def test_find_neighbors_max2():
@@ -271,11 +309,15 @@ class TestDiscreteOpt(unittest.TestCase):
         problem.set_state(x)
         problem.find_neighbors()
 
-        neigh = np.array([[1, 1, 0, 1, 0],
-                          [0, 0, 0, 1, 0],
-                          [0, 1, 1, 1, 0],
-                          [0, 1, 0, 0, 0],
-                          [0, 1, 0, 1, 1]])
+        neigh = np.array(
+            [
+                [1, 1, 0, 1, 0],
+                [0, 0, 0, 1, 0],
+                [0, 1, 1, 1, 0],
+                [0, 1, 0, 0, 0],
+                [0, 1, 0, 1, 1],
+            ]
+        )
 
         assert np.array_equal(np.array(problem.neighbors), neigh)
 
@@ -289,16 +331,20 @@ class TestDiscreteOpt(unittest.TestCase):
         problem.set_state(x)
         problem.find_neighbors()
 
-        neigh = np.array([[1, 1, 2, 1, 0],
-                          [2, 1, 2, 1, 0],
-                          [0, 0, 2, 1, 0],
-                          [0, 2, 2, 1, 0],
-                          [0, 1, 0, 1, 0],
-                          [0, 1, 1, 1, 0],
-                          [0, 1, 2, 0, 0],
-                          [0, 1, 2, 2, 0],
-                          [0, 1, 2, 1, 1],
-                          [0, 1, 2, 1, 2]])
+        neigh = np.array(
+            [
+                [1, 1, 2, 1, 0],
+                [2, 1, 2, 1, 0],
+                [0, 0, 2, 1, 0],
+                [0, 2, 2, 1, 0],
+                [0, 1, 0, 1, 0],
+                [0, 1, 1, 1, 0],
+                [0, 1, 2, 0, 0],
+                [0, 1, 2, 2, 0],
+                [0, 1, 2, 1, 1],
+                [0, 1, 2, 1, 2],
+            ]
+        )
 
         assert np.array_equal(np.array(problem.neighbors), neigh)
 
@@ -320,20 +366,23 @@ class TestDiscreteOpt(unittest.TestCase):
 
         problem = DiscreteOpt(5, OneMax(), maximize=True)
 
-        pop = np.array([[0, 0, 0, 0, 1],
-                        [1, 0, 1, 0, 1],
-                        [1, 1, 1, 1, 0],
-                        [1, 0, 0, 0, 1],
-                        [100, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1],
-                        [0, 0, 0, 0, -50]])
+        pop = np.array(
+            [
+                [0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [100, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1],
+                [0, 0, 0, 0, -50],
+            ]
+        )
 
         problem.set_population(pop)
         problem.find_top_pct(keep_pct=0.25)
 
-        x = np.array([[100, 0, 0, 0, 0],
-                      [1, 1, 1, 1, 1]])
+        x = np.array([[100, 0, 0, 0, 0], [1, 1, 1, 1, 1]])
 
         assert np.array_equal(problem.get_keep_sample(), x)
 
@@ -343,20 +392,23 @@ class TestDiscreteOpt(unittest.TestCase):
 
         problem = DiscreteOpt(5, OneMax(), maximize=False)
 
-        pop = np.array([[0, 0, 0, 0, 1],
-                        [1, 0, 1, 0, 1],
-                        [1, 1, 1, 1, 0],
-                        [1, 0, 0, 0, 1],
-                        [100, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1],
-                        [0, 0, 0, 0, -50]])
+        pop = np.array(
+            [
+                [0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [100, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1],
+                [0, 0, 0, 0, -50],
+            ]
+        )
 
         problem.set_population(pop)
         problem.find_top_pct(keep_pct=0.25)
 
-        x = np.array([[0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, -50]])
+        x = np.array([[0, 0, 0, 0, 0], [0, 0, 0, 0, -50]])
 
         assert np.array_equal(problem.get_keep_sample(), x)
 
@@ -368,7 +420,7 @@ class TestDiscreteOpt(unittest.TestCase):
 
         rand = problem.random()
 
-        assert (len(rand) == 5 and max(rand) >= 0 and min(rand) <= 4)
+        assert len(rand) == 5 and max(rand) >= 0 and min(rand) <= 4
 
     @staticmethod
     def test_random_neighbor_max2():
@@ -382,7 +434,7 @@ class TestDiscreteOpt(unittest.TestCase):
         neigh = problem.random_neighbor()
         sum_diff = np.sum(np.abs(x - neigh))
 
-        assert (len(neigh) == 5 and sum_diff == 1)
+        assert len(neigh) == 5 and sum_diff == 1
 
     @staticmethod
     def test_random_neighbor_max_gt2():
@@ -399,7 +451,7 @@ class TestDiscreteOpt(unittest.TestCase):
 
         sum_diff = np.sum(abs_diff)
 
-        assert (len(neigh) == 5 and sum_diff == 1)
+        assert len(neigh) == 5 and sum_diff == 1
 
     @staticmethod
     def test_random_pop():
@@ -411,9 +463,13 @@ class TestDiscreteOpt(unittest.TestCase):
         pop = problem.get_population()
         pop_fitness = problem.get_pop_fitness()
 
-        assert (np.shape(pop)[0] == 100 and np.shape(pop)[1] == 5
-                and np.sum(pop) > 0 and np.sum(pop) < 500
-                and len(pop_fitness) == 100)
+        assert (
+            np.shape(pop)[0] == 100
+            and np.shape(pop)[1] == 5
+            and np.sum(pop) > 0
+            and np.sum(pop) < 500
+            and len(pop_fitness) == 100
+        )
 
     @staticmethod
     def test_reproduce_mut0():
@@ -425,7 +481,7 @@ class TestDiscreteOpt(unittest.TestCase):
 
         child = problem.reproduce(father, mother, mutation_prob=0)
 
-        assert (len(child) == 5 and sum(child) > 0 and sum(child) < 5)
+        assert len(child) == 5 and sum(child) > 0 and sum(child) < 5
 
     @staticmethod
     def test_reproduce_mut1_max2():
@@ -437,7 +493,7 @@ class TestDiscreteOpt(unittest.TestCase):
 
         child = problem.reproduce(father, mother, mutation_prob=1)
 
-        assert (len(child) == 5 and sum(child) > 0 and sum(child) < 5)
+        assert len(child) == 5 and sum(child) > 0 and sum(child) < 5
 
     @staticmethod
     def test_reproduce_mut1_max_gt2():
@@ -450,7 +506,7 @@ class TestDiscreteOpt(unittest.TestCase):
 
         child = problem.reproduce(father, mother, mutation_prob=1)
 
-        assert (len(child) == 5 and sum(child) > 0 and sum(child) < 10)
+        assert len(child) == 5 and sum(child) > 0 and sum(child) < 10
 
     @staticmethod
     def test_sample_pop():
@@ -458,20 +514,28 @@ class TestDiscreteOpt(unittest.TestCase):
 
         problem = DiscreteOpt(5, OneMax(), maximize=True)
 
-        pop = np.array([[0, 0, 0, 0, 1],
-                        [1, 0, 1, 0, 1],
-                        [1, 1, 1, 1, 0],
-                        [1, 0, 0, 0, 1],
-                        [0, 0, 0, 0, 0],
-                        [1, 1, 1, 1, 1]])
+        pop = np.array(
+            [
+                [0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1],
+                [1, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0],
+                [1, 1, 1, 1, 1],
+            ]
+        )
 
         problem.keep_sample = pop
         problem.eval_node_probs()
 
         sample = problem.sample_pop(100)
 
-        assert (np.shape(sample)[0] == 100 and np.shape(sample)[1] == 5
-                and np.sum(sample) > 0 and np.sum(sample) < 500)
+        assert (
+            np.shape(sample)[0] == 100
+            and np.shape(sample)[1] == 5
+            and np.sum(sample) > 0
+            and np.sum(sample) < 500
+        )
 
 
 class TestContinuousOpt(unittest.TestCase):
@@ -481,23 +545,33 @@ class TestContinuousOpt(unittest.TestCase):
     def test_calculate_updates():
         """Test calculate_updates method"""
 
-        X = np.array([[0, 1, 0, 1],
-                      [0, 0, 0, 0],
-                      [1, 1, 1, 1],
-                      [1, 1, 1, 1],
-                      [0, 0, 1, 1],
-                      [1, 0, 0, 0]])
+        X = np.array(
+            [
+                [0, 1, 0, 1],
+                [0, 0, 0, 0],
+                [1, 1, 1, 1],
+                [1, 1, 1, 1],
+                [0, 0, 1, 1],
+                [1, 0, 0, 0],
+            ]
+        )
 
         y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
 
         nodes = [4, 2, 1]
 
-        fitness = NetworkWeights(X, y, nodes, activation=identity,
-                                 bias=False, is_classifier=False,
-                                 learning_rate=1)
+        fitness = NetworkWeights(
+            X,
+            y,
+            nodes,
+            activation=identity,
+            bias=False,
+            is_classifier=False,
+            learning_rate=1,
+        )
 
         a = list(np.arange(8) + 1)
-        b = list(0.01*(np.arange(2) + 1))
+        b = list(0.01 * (np.arange(2) + 1))
 
         weights = a + b
         fitness.evaluate(weights)
@@ -506,34 +580,43 @@ class TestContinuousOpt(unittest.TestCase):
 
         updates = problem.calculate_updates()
 
-        update1 = np.array([[-0.0017, -0.0034],
-                            [-0.0046, -0.0092],
-                            [-0.0052, -0.0104],
-                            [0.0014, 0.0028]])
+        update1 = np.array(
+            [
+                [-0.0017, -0.0034],
+                [-0.0046, -0.0092],
+                [-0.0052, -0.0104],
+                [0.0014, 0.0028],
+            ]
+        )
 
-        update2 = np.array([[-3.17],
-                            [-4.18]])
+        update2 = np.array([[-3.17], [-4.18]])
 
-        assert (np.allclose(updates[0], update1, atol=0.001)
-                and np.allclose(updates[1], update2, atol=0.001))
+        assert np.allclose(updates[0], update1, atol=0.001) and np.allclose(
+            updates[1], update2, atol=0.001
+        )
 
     @staticmethod
     def test_find_neighbors_range_eq_step():
         """Test find_neighbors method when range equals step size"""
 
-        problem = ContinuousOpt(5, OneMax(), maximize=True,
-                                min_val=0, max_val=1, step=1)
+        problem = ContinuousOpt(
+            5, OneMax(), maximize=True, min_val=0, max_val=1, step=1
+        )
 
         x = np.array([0, 1, 0, 1, 0])
         problem.set_state(x)
 
         problem.find_neighbors()
 
-        neigh = np.array([[1, 1, 0, 1, 0],
-                          [0, 0, 0, 1, 0],
-                          [0, 1, 1, 1, 0],
-                          [0, 1, 0, 0, 0],
-                          [0, 1, 0, 1, 1]])
+        neigh = np.array(
+            [
+                [1, 1, 0, 1, 0],
+                [0, 0, 0, 1, 0],
+                [0, 1, 1, 1, 0],
+                [0, 1, 0, 0, 0],
+                [0, 1, 0, 1, 1],
+            ]
+        )
 
         assert np.array_equal(np.array(problem.neighbors), neigh)
 
@@ -541,20 +624,25 @@ class TestContinuousOpt(unittest.TestCase):
     def test_find_neighbors_range_gt_step():
         """Test find_neighbors method when range greater than step size"""
 
-        problem = ContinuousOpt(5, OneMax(), maximize=True,
-                                min_val=0, max_val=2, step=1)
+        problem = ContinuousOpt(
+            5, OneMax(), maximize=True, min_val=0, max_val=2, step=1
+        )
 
         x = np.array([0, 1, 2, 1, 0])
         problem.set_state(x)
         problem.find_neighbors()
 
-        neigh = np.array([[1, 1, 2, 1, 0],
-                          [0, 0, 2, 1, 0],
-                          [0, 2, 2, 1, 0],
-                          [0, 1, 1, 1, 0],
-                          [0, 1, 2, 0, 0],
-                          [0, 1, 2, 2, 0],
-                          [0, 1, 2, 1, 1]])
+        neigh = np.array(
+            [
+                [1, 1, 2, 1, 0],
+                [0, 0, 2, 1, 0],
+                [0, 2, 2, 1, 0],
+                [0, 1, 1, 1, 0],
+                [0, 1, 2, 0, 0],
+                [0, 1, 2, 2, 0],
+                [0, 1, 2, 1, 1],
+            ]
+        )
 
         assert np.array_equal(np.array(problem.neighbors), neigh)
 
@@ -562,19 +650,19 @@ class TestContinuousOpt(unittest.TestCase):
     def test_random():
         """Test random method"""
 
-        problem = ContinuousOpt(5, OneMax(), maximize=True,
-                                min_val=0, max_val=4)
+        problem = ContinuousOpt(5, OneMax(), maximize=True, min_val=0, max_val=4)
 
         rand = problem.random()
 
-        assert (len(rand) == 5 and max(rand) >= 0 and min(rand) <= 4)
+        assert len(rand) == 5 and max(rand) >= 0 and min(rand) <= 4
 
     @staticmethod
     def test_random_neighbor_range_eq_step():
         """Test random_neighbor method when range equals step size"""
 
-        problem = ContinuousOpt(5, OneMax(), maximize=True,
-                                min_val=0, max_val=1, step=1)
+        problem = ContinuousOpt(
+            5, OneMax(), maximize=True, min_val=0, max_val=1, step=1
+        )
 
         x = np.array([0, 0, 1, 1, 1])
         problem.set_state(x)
@@ -582,14 +670,15 @@ class TestContinuousOpt(unittest.TestCase):
         neigh = problem.random_neighbor()
         sum_diff = np.sum(np.abs(x - neigh))
 
-        assert (len(neigh) == 5 and sum_diff == 1)
+        assert len(neigh) == 5 and sum_diff == 1
 
     @staticmethod
     def test_random_neighbor_range_gt_step():
         """Test random_neighbor method when range greater than step size"""
 
-        problem = ContinuousOpt(5, OneMax(), maximize=True,
-                                min_val=0, max_val=2, step=1)
+        problem = ContinuousOpt(
+            5, OneMax(), maximize=True, min_val=0, max_val=2, step=1
+        )
 
         x = np.array([0, 1, 2, 3, 4])
         problem.set_state(x)
@@ -600,71 +689,80 @@ class TestContinuousOpt(unittest.TestCase):
 
         sum_diff = np.sum(abs_diff)
 
-        assert (len(neigh) == 5 and sum_diff == 1)
+        assert len(neigh) == 5 and sum_diff == 1
 
     @staticmethod
     def test_random_pop():
         """Test random_pop method"""
 
-        problem = ContinuousOpt(5, OneMax(), maximize=True,
-                                min_val=0, max_val=1, step=1)
+        problem = ContinuousOpt(
+            5, OneMax(), maximize=True, min_val=0, max_val=1, step=1
+        )
         problem.random_pop(100)
 
         pop = problem.get_population()
         pop_fitness = problem.get_pop_fitness()
 
-        assert (np.shape(pop)[0] == 100 and np.shape(pop)[1] == 5
-                and np.sum(pop) > 0 and np.sum(pop) < 500
-                and len(pop_fitness) == 100)
+        assert (
+            np.shape(pop)[0] == 100
+            and np.shape(pop)[1] == 5
+            and np.sum(pop) > 0
+            and np.sum(pop) < 500
+            and len(pop_fitness) == 100
+        )
 
     @staticmethod
     def test_reproduce_mut0():
         """Test reproduce method when mutation_prob is 0"""
 
-        problem = ContinuousOpt(5, OneMax(), maximize=True,
-                                min_val=0, max_val=1, step=1)
+        problem = ContinuousOpt(
+            5, OneMax(), maximize=True, min_val=0, max_val=1, step=1
+        )
         father = np.array([0, 0, 0, 0, 0])
         mother = np.array([1, 1, 1, 1, 1])
 
         child = problem.reproduce(father, mother, mutation_prob=0)
 
-        assert (len(child) == 5 and sum(child) > 0 and sum(child) < 5)
+        assert len(child) == 5 and sum(child) > 0 and sum(child) < 5
 
     @staticmethod
     def test_reproduce_mut1_range_eq_step():
         """Test reproduce method when mutation_prob is 1 and range equals
         step size"""
 
-        problem = ContinuousOpt(5, OneMax(), maximize=True,
-                                min_val=0, max_val=1, step=1)
+        problem = ContinuousOpt(
+            5, OneMax(), maximize=True, min_val=0, max_val=1, step=1
+        )
         father = np.array([0, 0, 0, 0, 0])
         mother = np.array([1, 1, 1, 1, 1])
 
         child = problem.reproduce(father, mother, mutation_prob=1)
 
-        assert (len(child) == 5 and sum(child) > 0 and sum(child) < 5)
+        assert len(child) == 5 and sum(child) > 0 and sum(child) < 5
 
     @staticmethod
     def test_reproduce_mut1_range_gt_step():
         """Test reproduce method when mutation_prob is 1 and range is
         greater than step size"""
 
-        problem = ContinuousOpt(5, OneMax(), maximize=True,
-                                min_val=0, max_val=2, step=1)
+        problem = ContinuousOpt(
+            5, OneMax(), maximize=True, min_val=0, max_val=2, step=1
+        )
         father = np.array([0, 0, 0, 0, 0])
         mother = np.array([2, 2, 2, 2, 2])
 
         child = problem.reproduce(father, mother, mutation_prob=1)
 
-        assert (len(child) == 5 and sum(child) > 0 and sum(child) < 10)
+        assert len(child) == 5 and sum(child) > 0 and sum(child) < 10
 
     @staticmethod
     def test_update_state_in_range():
         """Test update_state method where all updated values are within the
         tolerated range"""
 
-        problem = ContinuousOpt(5, OneMax(), maximize=True,
-                                min_val=0, max_val=20, step=1)
+        problem = ContinuousOpt(
+            5, OneMax(), maximize=True, min_val=0, max_val=20, step=1
+        )
 
         x = np.array([0, 1, 2, 3, 4])
         problem.set_state(x)
@@ -679,8 +777,9 @@ class TestContinuousOpt(unittest.TestCase):
         """Test update_state method where some updated values are outside the
         tolerated range"""
 
-        problem = ContinuousOpt(5, OneMax(), maximize=True,
-                                min_val=0, max_val=5, step=1)
+        problem = ContinuousOpt(
+            5, OneMax(), maximize=True, min_val=0, max_val=5, step=1
+        )
 
         x = np.array([0, 1, 2, 3, 4])
         problem.set_state(x)
@@ -701,8 +800,18 @@ class TestTSPOpt(unittest.TestCase):
         """Test adjust_probs method when all elements in input vector sum to
         zero."""
 
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
-                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        dists = [
+            (0, 1, 3),
+            (0, 2, 5),
+            (0, 3, 1),
+            (0, 4, 7),
+            (1, 3, 6),
+            (4, 1, 9),
+            (2, 3, 8),
+            (2, 4, 2),
+            (3, 2, 8),
+            (3, 4, 4),
+        ]
 
         problem = TSPOpt(5, distances=dists)
 
@@ -715,8 +824,18 @@ class TestTSPOpt(unittest.TestCase):
         """Test adjust_probs method when all elements in input vector sum to
         some value other than zero."""
 
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
-                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        dists = [
+            (0, 1, 3),
+            (0, 2, 5),
+            (0, 3, 1),
+            (0, 4, 7),
+            (1, 3, 6),
+            (4, 1, 9),
+            (2, 3, 8),
+            (2, 4, 2),
+            (3, 2, 8),
+            (3, 4, 4),
+        ]
 
         problem = TSPOpt(5, distances=dists)
 
@@ -729,8 +848,18 @@ class TestTSPOpt(unittest.TestCase):
     def test_find_neighbors():
         """Test find_neighbors method"""
 
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
-                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        dists = [
+            (0, 1, 3),
+            (0, 2, 5),
+            (0, 3, 1),
+            (0, 4, 7),
+            (1, 3, 6),
+            (4, 1, 9),
+            (2, 3, 8),
+            (2, 4, 2),
+            (3, 2, 8),
+            (3, 4, 4),
+        ]
 
         problem = TSPOpt(5, distances=dists)
 
@@ -738,16 +867,20 @@ class TestTSPOpt(unittest.TestCase):
         problem.set_state(x)
         problem.find_neighbors()
 
-        neigh = np.array([[1, 0, 2, 3, 4],
-                          [2, 1, 0, 3, 4],
-                          [3, 1, 2, 0, 4],
-                          [4, 1, 2, 3, 0],
-                          [0, 2, 1, 3, 4],
-                          [0, 3, 2, 1, 4],
-                          [0, 4, 2, 3, 1],
-                          [0, 1, 3, 2, 4],
-                          [0, 1, 4, 3, 2],
-                          [0, 1, 2, 4, 3]])
+        neigh = np.array(
+            [
+                [1, 0, 2, 3, 4],
+                [2, 1, 0, 3, 4],
+                [3, 1, 2, 0, 4],
+                [4, 1, 2, 3, 0],
+                [0, 2, 1, 3, 4],
+                [0, 3, 2, 1, 4],
+                [0, 4, 2, 3, 1],
+                [0, 1, 3, 2, 4],
+                [0, 1, 4, 3, 2],
+                [0, 1, 2, 4, 3],
+            ]
+        )
 
         assert np.array_equal(np.array(problem.neighbors), neigh)
 
@@ -755,27 +888,51 @@ class TestTSPOpt(unittest.TestCase):
     def test_random():
         """Test random method"""
 
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
-                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        dists = [
+            (0, 1, 3),
+            (0, 2, 5),
+            (0, 3, 1),
+            (0, 4, 7),
+            (1, 3, 6),
+            (4, 1, 9),
+            (2, 3, 8),
+            (2, 4, 2),
+            (3, 2, 8),
+            (3, 4, 4),
+        ]
 
         problem = TSPOpt(5, distances=dists)
         rand = problem.random()
 
-        assert (len(rand) == 5 and len(set(rand)) == 5)
+        assert len(rand) == 5 and len(set(rand)) == 5
 
     @staticmethod
     def test_random_mimic():
         """Test random_mimic method"""
 
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
-                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        dists = [
+            (0, 1, 3),
+            (0, 2, 5),
+            (0, 3, 1),
+            (0, 4, 7),
+            (1, 3, 6),
+            (4, 1, 9),
+            (2, 3, 8),
+            (2, 4, 2),
+            (3, 2, 8),
+            (3, 4, 4),
+        ]
 
-        pop = np.array([[1, 0, 3, 2, 4],
-                        [0, 2, 1, 3, 4],
-                        [0, 2, 4, 3, 1],
-                        [4, 1, 3, 2, 0],
-                        [3, 4, 0, 2, 1],
-                        [2, 4, 0, 3, 1]])
+        pop = np.array(
+            [
+                [1, 0, 3, 2, 4],
+                [0, 2, 1, 3, 4],
+                [0, 2, 4, 3, 1],
+                [4, 1, 3, 2, 0],
+                [3, 4, 0, 2, 1],
+                [2, 4, 0, 3, 1],
+            ]
+        )
 
         problem = TSPOpt(5, distances=dists)
         problem.keep_sample = pop
@@ -784,14 +941,24 @@ class TestTSPOpt(unittest.TestCase):
 
         rand = problem.random_mimic()
 
-        assert (len(rand) == 5 and len(set(rand)) == 5)
+        assert len(rand) == 5 and len(set(rand)) == 5
 
     @staticmethod
     def test_random_neighbor():
         """Test random_neighbor method"""
 
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
-                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        dists = [
+            (0, 1, 3),
+            (0, 2, 5),
+            (0, 3, 1),
+            (0, 4, 7),
+            (1, 3, 6),
+            (4, 1, 9),
+            (2, 3, 8),
+            (2, 4, 2),
+            (3, 2, 8),
+            (3, 4, 4),
+        ]
 
         problem = TSPOpt(5, distances=dists)
 
@@ -804,14 +971,24 @@ class TestTSPOpt(unittest.TestCase):
 
         sum_diff = np.sum(abs_diff)
 
-        assert (len(neigh) == 5 and sum_diff == 2 and len(set(neigh)) == 5)
+        assert len(neigh) == 5 and sum_diff == 2 and len(set(neigh)) == 5
 
     @staticmethod
     def test_reproduce_mut0():
         """Test reproduce method when mutation_prob is 0"""
 
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
-                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        dists = [
+            (0, 1, 3),
+            (0, 2, 5),
+            (0, 3, 1),
+            (0, 4, 7),
+            (1, 3, 6),
+            (4, 1, 9),
+            (2, 3, 8),
+            (2, 4, 2),
+            (3, 2, 8),
+            (3, 4, 4),
+        ]
 
         problem = TSPOpt(5, distances=dists)
 
@@ -820,14 +997,24 @@ class TestTSPOpt(unittest.TestCase):
 
         child = problem.reproduce(father, mother, mutation_prob=0)
 
-        assert (len(child) == 5 and len(set(child)) == 5)
+        assert len(child) == 5 and len(set(child)) == 5
 
     @staticmethod
     def test_reproduce_mut1():
         """Test reproduce method when mutation_prob is 1"""
 
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
-                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        dists = [
+            (0, 1, 3),
+            (0, 2, 5),
+            (0, 3, 1),
+            (0, 4, 7),
+            (1, 3, 6),
+            (4, 1, 9),
+            (2, 3, 8),
+            (2, 4, 2),
+            (3, 2, 8),
+            (3, 4, 4),
+        ]
 
         problem = TSPOpt(5, distances=dists)
 
@@ -836,21 +1023,35 @@ class TestTSPOpt(unittest.TestCase):
 
         child = problem.reproduce(father, mother, mutation_prob=1)
 
-        assert (len(child) == 5 and len(set(child)) == 5)
+        assert len(child) == 5 and len(set(child)) == 5
 
     @staticmethod
     def test_sample_pop():
         """Test sample_pop method"""
 
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
-                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        dists = [
+            (0, 1, 3),
+            (0, 2, 5),
+            (0, 3, 1),
+            (0, 4, 7),
+            (1, 3, 6),
+            (4, 1, 9),
+            (2, 3, 8),
+            (2, 4, 2),
+            (3, 2, 8),
+            (3, 4, 4),
+        ]
 
-        pop = np.array([[1, 0, 3, 2, 4],
-                        [0, 2, 1, 3, 4],
-                        [0, 2, 4, 3, 1],
-                        [4, 1, 3, 2, 0],
-                        [3, 4, 0, 2, 1],
-                        [2, 4, 0, 3, 1]])
+        pop = np.array(
+            [
+                [1, 0, 3, 2, 4],
+                [0, 2, 1, 3, 4],
+                [0, 2, 4, 3, 1],
+                [4, 1, 3, 2, 0],
+                [3, 4, 0, 2, 1],
+                [2, 4, 0, 3, 1],
+            ]
+        )
 
         problem = TSPOpt(5, distances=dists)
 
@@ -860,9 +1061,13 @@ class TestTSPOpt(unittest.TestCase):
         sample = problem.sample_pop(100)
         row_sums = np.sum(sample, axis=1)
 
-        assert (np.shape(sample)[0] == 100 and np.shape(sample)[1] == 5
-                and max(row_sums) == 10 and min(row_sums) == 10)
+        assert (
+            np.shape(sample)[0] == 100
+            and np.shape(sample)[1] == 5
+            and max(row_sums) == 10
+            and min(row_sums) == 10
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

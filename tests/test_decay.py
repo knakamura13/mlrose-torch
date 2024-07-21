@@ -73,11 +73,12 @@ class TestDecay(unittest.TestCase):
     @staticmethod
     def test_custom():
         """Test custom evaluation function"""
+
         # Define custom schedule function
         def custom(t, c):
             return t + c
 
-        kwargs = {'c': 10}
+        kwargs = {"c": 10}
 
         schedule = CustomSchedule(custom, **kwargs)
         x = schedule.evaluate(5)
@@ -85,5 +86,5 @@ class TestDecay(unittest.TestCase):
         assert x == 15
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
