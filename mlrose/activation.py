@@ -4,6 +4,8 @@
 # License: BSD 3 clause
 
 import numpy as np
+import torch
+import torch.nn.functional as F
 
 
 def identity(x: np.ndarray, deriv: bool = False) -> np.ndarray:
@@ -48,11 +50,11 @@ def relu(x: np.ndarray, deriv: bool = False) -> np.ndarray:
     np.ndarray
         Value of activation function at x
     """
-    fx = np.copy(x)
-    fx[np.where(fx < 0)] = 0
+    x_tensor = torch.tensor(x, dtype=torch.float32)
+    fx = F.relu(x_tensor).numpy()
 
     if deriv:
-        fx[np.where(fx > 0)] = 1
+        fx = (fx > 0).astype(float)
 
     return fx
 
@@ -74,10 +76,11 @@ def sigmoid(x: np.ndarray, deriv: bool = False) -> np.ndarray:
     np.ndarray
         Value of activation function at x
     """
-    fx = 1 / (1 + np.exp(-x))
+    x_tensor = torch.tensor(x, dtype=torch.float32)
+    fx = torch.sigmoid(x_tensor).numpy()
 
     if deriv:
-        fx *= 1 - fx
+        fx = fx * (1 - fx)
 
     return fx
 
@@ -95,10 +98,8 @@ def softmax(x: np.ndarray) -> np.ndarray:
     np.ndarray
         Value of activation function at x
     """
-    max_prob = np.max(x, axis=1).reshape((-1, 1))
-    fx = np.exp(x - max_prob)
-    sum_prob = np.sum(fx, axis=1).reshape((-1, 1))
-    fx = np.divide(fx, sum_prob)
+    x_tensor = torch.tensor(x, dtype=torch.float32)
+    fx = F.softmax(x_tensor, dim=1).numpy()
 
     return fx
 
@@ -120,7 +121,8 @@ def tanh(x: np.ndarray, deriv: bool = False) -> np.ndarray:
     np.ndarray
         Value of activation function at x
     """
-    fx = np.tanh(x)
+    x_tensor = torch.tensor(x, dtype=torch.float32)
+    fx = torch.tanh(x_tensor).numpy()
 
     if deriv:
         fx = 1 - fx**2
