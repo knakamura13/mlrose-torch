@@ -36,7 +36,7 @@ class OptProb:
         else:
             self.length = length
 
-        self.state = np.array([0]*self.length)
+        self.state = np.array([0] * self.length)
         self.neighbors = []
         self.fitness_fn = fitness_fn
         self.fitness = 0
@@ -95,7 +95,7 @@ class OptProb:
         if len(state) != self.length:
             raise Exception("state length must match problem length")
 
-        fitness = self.maximize*self.fitness_fn.evaluate(state)
+        fitness = self.maximize * self.fitness_fn.evaluate(state)
 
         return fitness
 
@@ -107,16 +107,15 @@ class OptProb:
 
         # Set -1*inf values to 0 to avoid dividing by sum of infinity.
         # This forces mate_probs for these pop members to 0.
-        pop_fitness[pop_fitness == -1.0*np.inf] = 0
+        pop_fitness[pop_fitness == -1.0 * np.inf] = 0
 
         if np.sum(pop_fitness) == 0:
-            self.mate_probs = np.ones(len(pop_fitness)) \
-                              / len(pop_fitness)
+            self.mate_probs = np.ones(len(pop_fitness)) / len(pop_fitness)
         else:
-            self.mate_probs = pop_fitness/np.sum(pop_fitness)
+            self.mate_probs = pop_fitness / np.sum(pop_fitness)
 
     def get_fitness(self):
-        """ Return the fitness of the current state vector.
+        """Return the fitness of the current state vector.
 
         Returns
         -------
@@ -126,7 +125,7 @@ class OptProb:
         return self.fitness
 
     def get_length(self):
-        """ Return the state vector length.
+        """Return the state vector length.
 
         Returns
         -------
@@ -136,7 +135,7 @@ class OptProb:
         return self.length
 
     def get_mate_probs(self):
-        """ Return the population mate probabilities.
+        """Return the population mate probabilities.
 
         Returns
         -------
@@ -147,7 +146,7 @@ class OptProb:
         return self.mate_probs
 
     def get_maximize(self):
-        """ Return the maximization multiplier.
+        """Return the maximization multiplier.
 
         Returns
         -------
@@ -157,7 +156,7 @@ class OptProb:
         return self.maximize
 
     def get_pop_fitness(self):
-        """ Return the current population fitness array.
+        """Return the current population fitness array.
 
         Returns
         -------
@@ -168,7 +167,7 @@ class OptProb:
         return self.pop_fitness
 
     def get_population(self):
-        """ Return the current population.
+        """Return the current population.
 
         Returns
         -------
@@ -178,7 +177,7 @@ class OptProb:
         return self.population
 
     def get_state(self):
-        """ Return the current state vector.
+        """Return the current state vector.
 
         Returns
         -------
@@ -188,7 +187,7 @@ class OptProb:
         return self.state
 
     def set_population(self, new_population):
-        """ Change the current population to a specified new population and get
+        """Change the current population to a specified new population and get
         the fitness of all members.
 
         Parameters
@@ -249,12 +248,13 @@ class DiscreteOpt(OptProb):
 
         OptProb.__init__(self, length, fitness_fn, maximize)
 
-        if self.fitness_fn.get_prob_type() == 'continuous':
-            raise Exception("""fitness_fn must have problem type 'discrete',"""
-                            + """ 'either' or 'tsp'. Define problem as"""
-                            + """ ContinuousOpt problem or use alternative"""
-                            + """ fitness function."""
-                            )
+        if self.fitness_fn.get_prob_type() == "continuous":
+            raise Exception(
+                """fitness_fn must have problem type 'discrete',"""
+                + """ 'either' or 'tsp'. Define problem as"""
+                + """ ContinuousOpt problem or use alternative"""
+                + """ fitness function."""
+            )
 
         if max_val < 0:
             raise Exception("""max_val must be a positive integer.""")
@@ -270,24 +270,23 @@ class DiscreteOpt(OptProb):
         self.node_probs = np.zeros([self.length, self.max_val, self.max_val])
         self.parent_nodes = []
         self.sample_order = []
-        self.prob_type = 'discrete'
+        self.prob_type = "discrete"
         self.mimic_speed = False
 
     def eval_node_probs(self):
-        """Update probability density estimates.
-        """
+        """Update probability density estimates."""
         if not self.mimic_speed:
             # Create mutual info matrix
             mutual_info = np.zeros([self.length, self.length])
             for i in range(self.length - 1):
                 for j in range(i + 1, self.length):
                     mutual_info[i, j] = -1 * mutual_info_score(
-                        self.keep_sample[:, i],
-                        self.keep_sample[:, j])
+                        self.keep_sample[:, i], self.keep_sample[:, j]
+                    )
 
         elif self.mimic_speed:
             # Set ignore error to ignore dividing by zero
-            np.seterr(divide='ignore', invalid='ignore')
+            np.seterr(divide="ignore", invalid="ignore")
 
             # get length of the sample which survived from mimic iteration
             len_sample_kept = self.keep_sample.shape[0]
@@ -297,8 +296,9 @@ class DiscreteOpt(OptProb):
             # Expand the matrices to so each row corresponds to a row by row
             # combination of the list of samples
             permuted_rows = np.repeat(self.keep_sample, self.length)
-            permuted_rows = np.reshape(permuted_rows,
-                                       (len_sample_kept, len_prob*len_prob))
+            permuted_rows = np.reshape(
+                permuted_rows, (len_sample_kept, len_prob * len_prob)
+            )
             duplicated_rows = np.hstack(([self.keep_sample] * len_prob))
 
             # Compute the mutual information matrix in bulk
@@ -316,8 +316,8 @@ class DiscreteOpt(OptProb):
             cluster_U_sum = {}
             cluster_V_sum = {}
             for i in range(0, self.max_val):
-                cluster_U[i] = (duplicated_rows == i)
-                cluster_V[i] = (permuted_rows == i)
+                cluster_U[i] = duplicated_rows == i
+                cluster_V[i] = permuted_rows == i
                 cluster_U_sum[i] = np.sum(duplicated_rows == i, axis=0)
                 cluster_V_sum[i] = np.sum(permuted_rows == i, axis=0)
 
@@ -334,10 +334,12 @@ class DiscreteOpt(OptProb):
 
                     # compute the second term of the MI matrix
                     # Length |U_i||V_j|, for the particular feature pair
-                    UV_length = (cluster_U_sum[i] * cluster_V_sum[j])
-                    MI_second_term = np.log(MI_first_term) -\
-                        np.log(UV_length) +\
-                        np.log(len_sample_kept)
+                    UV_length = cluster_U_sum[i] * cluster_V_sum[j]
+                    MI_second_term = (
+                        np.log(MI_first_term)
+                        - np.log(UV_length)
+                        + np.log(len_sample_kept)
+                    )
 
                     # remove the nans and negative infinity, there shouldn't
                     # be any
@@ -347,13 +349,15 @@ class DiscreteOpt(OptProb):
                     # Combine the first and second term
                     # Add the whole MI matrix for the feature to the previously
                     # computed values
-                    mutual_info_vectorized = mutual_info_vectorized +\
-                        MI_first_term * MI_second_term
+                    mutual_info_vectorized = (
+                        mutual_info_vectorized + MI_first_term * MI_second_term
+                    )
 
             # Need to multiply by negative to get the mutual information, and
             # reshape (Full Matrix)
-            mutual_info_full = -1*np.reshape(mutual_info_vectorized,
-                                             (self.length, self.length))
+            mutual_info_full = -1 * np.reshape(
+                mutual_info_vectorized, (self.length, self.length)
+            )
 
             # Only get the upper triangle matrix above the identity row.
             mutual_info = np.triu(mutual_info_full, k=1)
@@ -375,29 +379,29 @@ class DiscreteOpt(OptProb):
         # Get probs
         probs = np.zeros([self.length, self.max_val, self.max_val])
 
-        probs[0, :] = np.histogram(self.keep_sample[:, 0],
-                                   np.arange(self.max_val + 1),
-                                   density=True)[0]
+        probs[0, :] = np.histogram(
+            self.keep_sample[:, 0], np.arange(self.max_val + 1), density=True
+        )[0]
 
         for i in range(1, self.length):
             for j in range(self.max_val):
-                subset = self.keep_sample[np.where(
-                    self.keep_sample[:, parent[i - 1]] == j)[0]]
+                subset = self.keep_sample[
+                    np.where(self.keep_sample[:, parent[i - 1]] == j)[0]
+                ]
 
                 if not len(subset):
-                    probs[i, j] = 1/self.max_val
+                    probs[i, j] = 1 / self.max_val
                 else:
-                    probs[i, j] = np.histogram(subset[:, i],
-                                               np.arange(self.max_val + 1),
-                                               density=True)[0]
+                    probs[i, j] = np.histogram(
+                        subset[:, i], np.arange(self.max_val + 1), density=True
+                    )[0]
 
         # Update probs and parent
         self.node_probs = probs
         self.parent_nodes = parent
 
     def find_neighbors(self):
-        """Find all neighbors of the current state.
-        """
+        """Find all neighbors of the current state."""
         self.neighbors = []
 
         if self.max_val == 2:
@@ -417,8 +421,7 @@ class DiscreteOpt(OptProb):
                     self.neighbors.append(neighbor)
 
     def find_sample_order(self):
-        """Determine order in which to generate sample vector elements.
-        """
+        """Determine order in which to generate sample vector elements."""
         sample_order = []
         last = [0]
         parent = np.array(self.parent_nodes)
@@ -429,8 +432,11 @@ class DiscreteOpt(OptProb):
             # If last nodes list is empty, select random node than has not
             # previously been selected
             if len(last) == 0:
-                inds = [np.random.choice(list(set(np.arange(self.length)) -
-                                              set(sample_order)))]
+                inds = [
+                    np.random.choice(
+                        list(set(np.arange(self.length)) - set(sample_order))
+                    )
+                ]
             else:
                 for i in last:
                     inds += list(np.where(parent == i)[0] + 1)
@@ -452,7 +458,7 @@ class DiscreteOpt(OptProb):
             raise Exception("""keep_pct must be between 0 and 1.""")
 
         # Determine threshold
-        theta = np.percentile(self.pop_fitness, 100*(1 - keep_pct))
+        theta = np.percentile(self.pop_fitness, 100 * (1 - keep_pct))
 
         # Determine samples for keeping
         keep_inds = np.where(self.pop_fitness >= theta)[0]
@@ -461,7 +467,7 @@ class DiscreteOpt(OptProb):
         self.keep_sample = self.population[keep_inds]
 
     def get_keep_sample(self):
-        """ Return the keep sample.
+        """Return the keep sample.
 
         Returns
         -------
@@ -472,7 +478,7 @@ class DiscreteOpt(OptProb):
         return self.keep_sample
 
     def get_prob_type(self):
-        """ Return the problem type.
+        """Return the problem type.
 
         Returns
         -------
@@ -510,7 +516,7 @@ class DiscreteOpt(OptProb):
         else:
             vals = list(np.arange(self.max_val))
             vals.remove(neighbor[i])
-            neighbor[i] = vals[np.random.randint(0, self.max_val-1)]
+            neighbor[i] = vals[np.random.randint(0, self.max_val - 1)]
 
         return neighbor
 
@@ -570,9 +576,9 @@ class DiscreteOpt(OptProb):
         # Reproduce parents
         if self.length > 1:
             _n = np.random.randint(self.length - 1)
-            child = np.array([0]*self.length)
-            child[0:_n+1] = parent_1[0:_n+1]
-            child[_n+1:] = parent_2[_n+1:]
+            child = np.array([0] * self.length)
+            child[0 : _n + 1] = parent_1[0 : _n + 1]
+            child[_n + 1 :] = parent_2[_n + 1 :]
         elif np.random.randint(2) == 0:
             child = np.copy(parent_1)
         else:
@@ -590,13 +596,12 @@ class DiscreteOpt(OptProb):
             for i in mutate:
                 vals = list(np.arange(self.max_val))
                 vals.remove(child[i])
-                child[i] = vals[np.random.randint(0, self.max_val-1)]
+                child[i] = vals[np.random.randint(0, self.max_val - 1)]
 
         return child
 
     def reset(self):
-        """Set the current state vector to a random value and get its fitness.
-        """
+        """Set the current state vector to a random value and get its fitness."""
         self.state = self.random()
         self.fitness = self.eval_fitness(self.state)
 
@@ -625,8 +630,9 @@ class DiscreteOpt(OptProb):
         new_sample = np.zeros([sample_size, self.length])
 
         # Get value of first element in new samples
-        new_sample[:, 0] = np.random.choice(self.max_val, sample_size,
-                                            p=self.node_probs[0, 0])
+        new_sample[:, 0] = np.random.choice(
+            self.max_val, sample_size, p=self.node_probs[0, 0]
+        )
 
         # Get sample order
         self.find_sample_order()
@@ -634,13 +640,13 @@ class DiscreteOpt(OptProb):
 
         # Get values for remaining elements in new samples
         for i in sample_order:
-            par_ind = self.parent_nodes[i-1]
+            par_ind = self.parent_nodes[i - 1]
 
             for j in range(self.max_val):
                 inds = np.where(new_sample[:, par_ind] == j)[0]
-                new_sample[inds, i] = np.random.choice(self.max_val,
-                                                       len(inds),
-                                                       p=self.node_probs[i, j])
+                new_sample[inds, i] = np.random.choice(
+                    self.max_val, len(inds), p=self.node_probs[i, j]
+                )
 
         return new_sample
 
@@ -670,18 +676,21 @@ class ContinuousOpt(OptProb):
         Step size used in determining neighbors of current state.
     """
 
-    def __init__(self, length, fitness_fn, maximize=True, min_val=0,
-                 max_val=1, step=0.1):
+    def __init__(
+        self, length, fitness_fn, maximize=True, min_val=0, max_val=1, step=0.1
+    ):
 
         OptProb.__init__(self, length, fitness_fn, maximize=maximize)
 
-        if (self.fitness_fn.get_prob_type() != 'continuous') \
-           and (self.fitness_fn.get_prob_type() != 'either'):
-            raise Exception("fitness_fn must have problem type 'continuous'"
-                            + """ or 'either'. Define problem as"""
-                            + """ DiscreteOpt problem or use alternative"""
-                            + """ fitness function."""
-                            )
+        if (self.fitness_fn.get_prob_type() != "continuous") and (
+            self.fitness_fn.get_prob_type() != "either"
+        ):
+            raise Exception(
+                "fitness_fn must have problem type 'continuous'"
+                + """ or 'either'. Define problem as"""
+                + """ DiscreteOpt problem or use alternative"""
+                + """ fitness function."""
+            )
 
         if max_val <= min_val:
             raise Exception("""max_val must be greater than min_val.""")
@@ -690,13 +699,14 @@ class ContinuousOpt(OptProb):
             raise Exception("""step size must be positive.""")
 
         if (max_val - min_val) < step:
-            raise Exception("""step size must be less than"""
-                            + """ (max_val - min_val).""")
+            raise Exception(
+                """step size must be less than""" + """ (max_val - min_val)."""
+            )
 
         self.min_val = min_val
         self.max_val = max_val
         self.step = step
-        self.prob_type = 'continuous'
+        self.prob_type = "continuous"
 
     def calculate_updates(self):
         """Calculate gradient descent updates.
@@ -718,7 +728,7 @@ class ContinuousOpt(OptProb):
         for i in range(self.length):
             for j in [-1, 1]:
                 neighbor = np.copy(self.state)
-                neighbor[i] += j*self.step
+                neighbor[i] += j * self.step
 
                 if neighbor[i] > self.max_val:
                     neighbor[i] = self.max_val
@@ -730,7 +740,7 @@ class ContinuousOpt(OptProb):
                     self.neighbors.append(neighbor)
 
     def get_prob_type(self):
-        """ Return the problem type.
+        """Return the problem type.
 
         Returns
         -------
@@ -763,7 +773,7 @@ class ContinuousOpt(OptProb):
             neighbor = np.copy(self.state)
             i = np.random.randint(0, self.length)
 
-            neighbor[i] += self.step*np.random.choice([-1, 1])
+            neighbor[i] += self.step * np.random.choice([-1, 1])
 
             if neighbor[i] > self.max_val:
                 neighbor[i] = self.max_val
@@ -834,9 +844,9 @@ class ContinuousOpt(OptProb):
         # Reproduce parents
         if self.length > 1:
             _n = np.random.randint(self.length - 1)
-            child = np.array([0.0]*self.length)
-            child[0:_n+1] = parent_1[0:_n+1]
-            child[_n+1:] = parent_2[_n+1:]
+            child = np.array([0.0] * self.length)
+            child[0 : _n + 1] = parent_1[0 : _n + 1]
+            child[_n + 1 :] = parent_2[_n + 1 :]
         elif np.random.randint(2) == 0:
             child = np.copy(parent_1)
         else:
@@ -852,8 +862,7 @@ class ContinuousOpt(OptProb):
         return child
 
     def reset(self):
-        """Set the current state vector to a random value and get its fitness.
-        """
+        """Set the current state vector to a random value and get its fitness."""
         self.state = self.random()
         self.fitness = self.eval_fitness(self.state)
 
@@ -914,22 +923,24 @@ class TSPOpt(DiscreteOpt):
         argument is ignored if fitness_fn or coords is not :code:`None`.
     """
 
-    def __init__(self, length, fitness_fn=None, maximize=False, coords=None,
-                 distances=None):
+    def __init__(
+        self, length, fitness_fn=None, maximize=False, coords=None, distances=None
+    ):
 
         if (fitness_fn is None) and (coords is None) and (distances is None):
-            raise Exception("""At least one of fitness_fn, coords and"""
-                            + """ distances must be specified.""")
+            raise Exception(
+                """At least one of fitness_fn, coords and"""
+                + """ distances must be specified."""
+            )
         elif fitness_fn is None:
             fitness_fn = TravellingSales(coords=coords, distances=distances)
 
-        DiscreteOpt.__init__(self, length, fitness_fn, maximize,
-                             max_val=length)
+        DiscreteOpt.__init__(self, length, fitness_fn, maximize, max_val=length)
 
-        if self.fitness_fn.get_prob_type() != 'tsp':
+        if self.fitness_fn.get_prob_type() != "tsp":
             raise Exception("""fitness_fn must have problem type 'tsp'.""")
 
-        self.prob_type = 'tsp'
+        self.prob_type = "tsp"
 
     def adjust_probs(self, probs):
         """Normalize a vector of probabilities so that the vector sums to 1.
@@ -949,13 +960,12 @@ class TSPOpt(DiscreteOpt):
             adj_probs = np.zeros(np.shape(probs))
 
         else:
-            adj_probs = probs/np.sum(probs)
+            adj_probs = probs / np.sum(probs)
 
         return adj_probs
 
     def find_neighbors(self):
-        """Find all neighbors of the current state.
-        """
+        """Find all neighbors of the current state."""
         self.neighbors = []
 
         for node1 in range(self.length - 1):
@@ -1002,7 +1012,7 @@ class TSPOpt(DiscreteOpt):
 
         # Set values of remaining elements of state
         for i in sample_order:
-            par_ind = self.parent_nodes[i-1]
+            par_ind = self.parent_nodes[i - 1]
             par_value = state[par_ind]
             probs = node_probs[i, par_value]
 
@@ -1028,8 +1038,7 @@ class TSPOpt(DiscreteOpt):
             State vector of random neighbor.
         """
         neighbor = np.copy(self.state)
-        node1, node2 = np.random.choice(np.arange(self.length),
-                                        size=2, replace=False)
+        node1, node2 = np.random.choice(np.arange(self.length), size=2, replace=False)
 
         neighbor[node1] = self.state[node2]
         neighbor[node2] = self.state[node1]
@@ -1065,12 +1074,11 @@ class TSPOpt(DiscreteOpt):
         # Reproduce parents
         if self.length > 1:
             _n = np.random.randint(self.length - 1)
-            child = np.array([0]*self.length)
-            child[0:_n+1] = parent_1[0:_n+1]
+            child = np.array([0] * self.length)
+            child[0 : _n + 1] = parent_1[0 : _n + 1]
 
-            unvisited = \
-                [node for node in parent_2 if node not in parent_1[0:_n+1]]
-            child[_n+1:] = unvisited
+            unvisited = [node for node in parent_2 if node not in parent_1[0 : _n + 1]]
+            child[_n + 1 :] = unvisited
         elif np.random.randint(2) == 0:
             child = np.copy(parent_1)
         else:

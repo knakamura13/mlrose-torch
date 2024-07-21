@@ -34,7 +34,7 @@ class OneMax:
 
     def __init__(self):
 
-        self.prob_type = 'either'
+        self.prob_type = "either"
 
     def evaluate(self, state):
         """Evaluate the fitness of a state vector.
@@ -54,7 +54,7 @@ class OneMax:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type.
+        """Return the problem type.
 
         Returns
         -------
@@ -91,7 +91,7 @@ class FlipFlop:
 
     def __init__(self):
 
-        self.prob_type = 'discrete'
+        self.prob_type = "discrete"
 
     def evaluate(self, state):
         """Evaluate the fitness of a state vector.
@@ -116,7 +116,7 @@ class FlipFlop:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type.
+        """Return the problem type.
 
         Returns
         -------
@@ -271,7 +271,7 @@ class FourPeaks:
     def __init__(self, t_pct=0.1):
 
         self.t_pct = t_pct
-        self.prob_type = 'discrete'
+        self.prob_type = "discrete"
 
         if (self.t_pct < 0) or (self.t_pct > 1):
             raise Exception("""t_pct must be between 0 and 1.""")
@@ -290,14 +290,14 @@ class FourPeaks:
             Value of fitness function.
         """
         _n = len(state)
-        _t = np.ceil(self.t_pct*_n)
+        _t = np.ceil(self.t_pct * _n)
 
         # Calculate head and tail values
         tail_0 = tail(0, state)
         head_1 = head(1, state)
 
         # Calculate R(X, T)
-        if (tail_0 > _t and head_1 > _t):
+        if tail_0 > _t and head_1 > _t:
             _r = _n
         else:
             _r = 0
@@ -308,7 +308,7 @@ class FourPeaks:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type.
+        """Return the problem type.
 
         Returns
         -------
@@ -369,7 +369,7 @@ class SixPeaks:
     def __init__(self, t_pct=0.1):
 
         self.t_pct = t_pct
-        self.prob_type = 'discrete'
+        self.prob_type = "discrete"
 
         if (self.t_pct < 0) or (self.t_pct > 1):
             raise Exception("""t_pct must be between 0 and 1.""")
@@ -388,7 +388,7 @@ class SixPeaks:
             Value of fitness function.
         """
         _n = len(state)
-        _t = np.ceil(self.t_pct*_n)
+        _t = np.ceil(self.t_pct * _n)
 
         # Calculate head and tail values
         head_0 = head(0, state)
@@ -411,7 +411,7 @@ class SixPeaks:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type.
+        """Return the problem type.
 
         Returns
         -------
@@ -466,7 +466,7 @@ class ContinuousPeaks:
     def __init__(self, t_pct=0.1):
 
         self.t_pct = t_pct
-        self.prob_type = 'discrete'
+        self.prob_type = "discrete"
 
         if (self.t_pct < 0) or (self.t_pct > 1):
             raise Exception("""t_pct must be between 0 and 1.""")
@@ -485,14 +485,14 @@ class ContinuousPeaks:
             Value of fitness function.
         """
         _n = len(state)
-        _t = np.ceil(self.t_pct*_n)
+        _t = np.ceil(self.t_pct * _n)
 
         # Calculate length of maximum runs of 0's and 1's
         max_0 = max_run(0, state)
         max_1 = max_run(1, state)
 
         # Calculate R(X, T)
-        if (max_0 > _t and max_1 > _t):
+        if max_0 > _t and max_1 > _t:
             _r = _n
         else:
             _r = 0
@@ -503,7 +503,7 @@ class ContinuousPeaks:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type.
+        """Return the problem type.
 
         Returns
         -------
@@ -566,12 +566,13 @@ class Knapsack:
 
         self.weights = weights
         self.values = values
-        self._w = np.ceil(np.sum(self.weights)*max_weight_pct)
-        self.prob_type = 'discrete'
+        self._w = np.ceil(np.sum(self.weights) * max_weight_pct)
+        self.prob_type = "discrete"
 
         if len(self.weights) != len(self.values):
-            raise Exception("""The weights array and values array must be"""
-                            + """ the same size.""")
+            raise Exception(
+                """The weights array and values array must be""" + """ the same size."""
+            )
 
         if min(self.weights) <= 0:
             raise Exception("""All weights must be greater than 0.""")
@@ -598,12 +599,14 @@ class Knapsack:
         """
 
         if len(state) != len(self.weights):
-            raise Exception("""The state array must be the same size as the"""
-                            + """ weight and values arrays.""")
+            raise Exception(
+                """The state array must be the same size as the"""
+                + """ weight and values arrays."""
+            )
 
         # Calculate total weight and value of knapsack
-        total_weight = np.sum(state*self.weights)
-        total_value = np.sum(state*self.values)
+        total_weight = np.sum(state * self.weights)
+        total_value = np.sum(state * self.values)
 
         # Allow for weight constraint
         if total_weight <= self._w:
@@ -614,7 +617,7 @@ class Knapsack:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type.
+        """Return the problem type.
 
         Returns
         -------
@@ -680,8 +683,9 @@ class TravellingSales:
     def __init__(self, coords=None, distances=None):
 
         if coords is None and distances is None:
-            raise Exception("""At least one of coords and distances must be"""
-                            + """ specified.""")
+            raise Exception(
+                """At least one of coords and distances must be""" + """ specified."""
+            )
 
         elif coords is not None:
             self.is_coords = True
@@ -692,22 +696,27 @@ class TravellingSales:
             self.is_coords = False
 
             # Remove any duplicates from list
-            distances = list({tuple(sorted(dist[0:2]) + [dist[2]])
-                              for dist in distances})
+            distances = list(
+                {tuple(sorted(dist[0:2]) + [dist[2]]) for dist in distances}
+            )
 
             # Split into separate lists
             node1_list, node2_list, dist_list = zip(*distances)
 
             if min(dist_list) <= 0:
-                raise Exception("""The distance between each pair of nodes"""
-                                + """ must be greater than 0.""")
+                raise Exception(
+                    """The distance between each pair of nodes"""
+                    + """ must be greater than 0."""
+                )
             if min(node1_list + node2_list) < 0:
                 raise Exception("""The minimum node value must be 0.""")
 
-            if not max(node1_list + node2_list) == \
-                    (len(set(node1_list + node2_list)) - 1):
-                raise Exception("""All nodes must appear at least once in"""
-                                + """ distances.""")
+            if not max(node1_list + node2_list) == (
+                len(set(node1_list + node2_list)) - 1
+            ):
+                raise Exception(
+                    """All nodes must appear at least once in""" + """ distances."""
+                )
 
             path_list = list(zip(node1_list, node2_list))
 
@@ -715,7 +724,7 @@ class TravellingSales:
         self.distances = distances
         self.path_list = path_list
         self.dist_list = dist_list
-        self.prob_type = 'tsp'
+        self.prob_type = "tsp"
 
     def evaluate(self, state):
         """Evaluate the fitness of a state vector.
@@ -740,12 +749,14 @@ class TravellingSales:
             raise Exception("""Each node must appear exactly once in state.""")
 
         if min(state) < 0:
-            raise Exception("""All elements of state must be non-negative"""
-                            + """ integers.""")
+            raise Exception(
+                """All elements of state must be non-negative""" + """ integers."""
+            )
 
         if max(state) >= len(state):
-            raise Exception("""All elements of state must be less than"""
-                            + """ len(state).""")
+            raise Exception(
+                """All elements of state must be less than""" + """ len(state)."""
+            )
 
         fitness = 0
 
@@ -755,8 +766,9 @@ class TravellingSales:
             node2 = state[i + 1]
 
             if self.is_coords:
-                fitness += np.linalg.norm(np.array(self.coords[node1])
-                                          - np.array(self.coords[node2]))
+                fitness += np.linalg.norm(
+                    np.array(self.coords[node1]) - np.array(self.coords[node2])
+                )
             else:
                 path = (min(node1, node2), max(node1, node2))
 
@@ -770,8 +782,9 @@ class TravellingSales:
         node2 = state[0]
 
         if self.is_coords:
-            fitness += np.linalg.norm(np.array(self.coords[node1])
-                                      - np.array(self.coords[node2]))
+            fitness += np.linalg.norm(
+                np.array(self.coords[node1]) - np.array(self.coords[node2])
+            )
         else:
             path = (min(node1, node2), max(node1, node2))
 
@@ -783,7 +796,7 @@ class TravellingSales:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type.
+        """Return the problem type.
 
         Returns
         -------
@@ -826,7 +839,7 @@ class Queens:
 
     def __init__(self):
 
-        self.prob_type = 'discrete'
+        self.prob_type = "discrete"
 
     def evaluate(self, state):
         """Evaluate the fitness of a state vector.
@@ -861,7 +874,7 @@ class Queens:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type.
+        """Return the problem type.
 
         Returns
         -------
@@ -910,7 +923,7 @@ class MaxKColor:
         edges = list({tuple(sorted(edge)) for edge in edges})
 
         self.edges = edges
-        self.prob_type = 'discrete'
+        self.prob_type = "discrete"
 
     def evaluate(self, state):
         """Evaluate the fitness of a state vector.
@@ -936,7 +949,7 @@ class MaxKColor:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type.
+        """Return the problem type.
 
         Returns
         -------
@@ -978,9 +991,9 @@ class CustomFitness:
         150
     """
 
-    def __init__(self, fitness_fn, problem_type='either', **kwargs):
+    def __init__(self, fitness_fn, problem_type="either", **kwargs):
 
-        if problem_type not in ['discrete', 'continuous', 'tsp', 'either']:
+        if problem_type not in ["discrete", "continuous", "tsp", "either"]:
             raise Exception("""problem_type does not exist.""")
         self.fitness_fn = fitness_fn
         self.problem_type = problem_type
@@ -1004,7 +1017,7 @@ class CustomFitness:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type.
+        """Return the problem type.
 
         Returns
         -------

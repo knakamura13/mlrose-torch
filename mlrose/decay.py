@@ -72,7 +72,7 @@ class GeomDecay:
             Temperature parameter at time t.
         """
 
-        temp = self.init_temp*(self.decay**t)
+        temp = self.init_temp * (self.decay**t)
 
         if temp < self.min_temp:
             temp = self.min_temp
@@ -146,7 +146,7 @@ class ArithDecay:
             Temperature parameter at time t.
         """
 
-        temp = self.init_temp - (self.decay*t)
+        temp = self.init_temp - (self.decay * t)
 
         if temp < self.min_temp:
             temp = self.min_temp
@@ -220,7 +220,7 @@ class ExpDecay:
             Temperature parameter at time t.
         """
 
-        temp = self.init_temp*np.exp(-1.0*self.exp_const*t)
+        temp = self.init_temp * np.exp(-1.0 * self.exp_const * t)
 
         if temp < self.min_temp:
             temp = self.min_temp

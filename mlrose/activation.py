@@ -74,10 +74,10 @@ def sigmoid(x, deriv=False):
     fx: array
         Value of activation function at x
     """
-    fx = 1/(1 + np.exp(-x))
+    fx = 1 / (1 + np.exp(-x))
 
     if deriv:
-        fx *= (1 - fx)
+        fx *= 1 - fx
 
     return fx
 

@@ -8,8 +8,14 @@ import numpy as np
 from .decay import GeomDecay
 
 
-def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
-               curve=False, random_state=None):
+def hill_climb(
+    problem,
+    max_iters=np.inf,
+    restarts=0,
+    init_state=None,
+    curve=False,
+    random_state=None,
+):
     """Use standard hill climbing to find the optimum for a given
     optimization problem.
 
@@ -50,12 +56,14 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
     Russell, S. and P. Norvig (2010). *Artificial Intelligence: A Modern
     Approach*, 3rd edition. Prentice Hall, New Jersey, USA.
     """
-    if (not isinstance(max_iters, int) and max_iters != np.inf
-            and not max_iters.is_integer()) or (max_iters < 0):
+    if (
+        not isinstance(max_iters, int)
+        and max_iters != np.inf
+        and not max_iters.is_integer()
+    ) or (max_iters < 0):
         raise Exception("""max_iters must be a positive integer.""")
 
-    if (not isinstance(restarts, int) and not restarts.is_integer()) \
-       or (restarts < 0):
+    if (not isinstance(restarts, int) and not restarts.is_integer()) or (restarts < 0):
         raise Exception("""restarts must be a positive integer.""")
 
     if init_state is not None and len(init_state) != problem.get_length():
@@ -65,7 +73,7 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
     if isinstance(random_state, int) and random_state > 0:
         np.random.seed(random_state)
 
-    best_fitness = -1*np.inf
+    best_fitness = -1 * np.inf
     best_state = None
 
     if curve:
@@ -103,7 +111,7 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()
 
-    best_fitness = problem.get_maximize()*best_fitness
+    best_fitness = problem.get_maximize() * best_fitness
 
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
@@ -111,8 +119,15 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
     return best_state, best_fitness
 
 
-def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
-                      init_state=None, curve=False, random_state=None):
+def random_hill_climb(
+    problem,
+    max_attempts=10,
+    max_iters=np.inf,
+    restarts=0,
+    init_state=None,
+    curve=False,
+    random_state=None,
+):
     """Use randomized hill climbing to find the optimum for a given
     optimization problem.
 
@@ -155,16 +170,19 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     Brownlee, J (2011). *Clever Algorithms: Nature-Inspired Programming
     Recipes*. `<http://www.cleveralgorithms.com>`_.
     """
-    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
-       or (max_attempts < 0):
+    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) or (
+        max_attempts < 0
+    ):
         raise Exception("""max_attempts must be a positive integer.""")
 
-    if (not isinstance(max_iters, int) and max_iters != np.inf
-            and not max_iters.is_integer()) or (max_iters < 0):
+    if (
+        not isinstance(max_iters, int)
+        and max_iters != np.inf
+        and not max_iters.is_integer()
+    ) or (max_iters < 0):
         raise Exception("""max_iters must be a positive integer.""")
 
-    if (not isinstance(restarts, int) and not restarts.is_integer()) \
-       or (restarts < 0):
+    if (not isinstance(restarts, int) and not restarts.is_integer()) or (restarts < 0):
         raise Exception("""restarts must be a positive integer.""")
 
     if init_state is not None and len(init_state) != problem.get_length():
@@ -174,7 +192,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     if isinstance(random_state, int) and random_state > 0:
         np.random.seed(random_state)
 
-    best_fitness = -1*np.inf
+    best_fitness = -1 * np.inf
     best_state = None
 
     if curve:
@@ -214,7 +232,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()
 
-    best_fitness = problem.get_maximize()*best_fitness
+    best_fitness = problem.get_maximize() * best_fitness
 
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
@@ -222,9 +240,15 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     return best_state, best_fitness
 
 
-def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
-                        max_iters=np.inf, init_state=None, curve=False,
-                        random_state=None):
+def simulated_annealing(
+    problem,
+    schedule=GeomDecay(),
+    max_attempts=10,
+    max_iters=np.inf,
+    init_state=None,
+    curve=False,
+    random_state=None,
+):
     """Use simulated annealing to find the optimum for a given
     optimization problem.
 
@@ -267,12 +291,16 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     Russell, S. and P. Norvig (2010). *Artificial Intelligence: A Modern
     Approach*, 3rd edition. Prentice Hall, New Jersey, USA.
     """
-    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
-       or (max_attempts < 0):
+    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) or (
+        max_attempts < 0
+    ):
         raise Exception("""max_attempts must be a positive integer.""")
 
-    if (not isinstance(max_iters, int) and max_iters != np.inf
-            and not max_iters.is_integer()) or (max_iters < 0):
+    if (
+        not isinstance(max_iters, int)
+        and max_iters != np.inf
+        and not max_iters.is_integer()
+    ) or (max_iters < 0):
         raise Exception("""max_iters must be a positive integer.""")
 
     if init_state is not None and len(init_state) != problem.get_length():
@@ -308,7 +336,7 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
 
             # Calculate delta E and change prob
             delta_e = next_fitness - problem.get_fitness()
-            prob = np.exp(delta_e/temp)
+            prob = np.exp(delta_e / temp)
 
             # If best neighbor is an improvement or random value is less
             # than prob, move to that state and reset attempts counter
@@ -322,7 +350,7 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
         if curve:
             fitness_curve.append(problem.get_fitness())
 
-    best_fitness = problem.get_maximize()*problem.get_fitness()
+    best_fitness = problem.get_maximize() * problem.get_fitness()
     best_state = problem.get_state()
 
     if curve:
@@ -331,8 +359,15 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     return best_state, best_fitness
 
 
-def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
-                max_iters=np.inf, curve=False, random_state=None):
+def genetic_alg(
+    problem,
+    pop_size=200,
+    mutation_prob=0.1,
+    max_attempts=10,
+    max_iters=np.inf,
+    curve=False,
+    random_state=None,
+):
     """Use a standard genetic algorithm to find the optimum for a given
     optimization problem.
 
@@ -387,12 +422,16 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
     if (mutation_prob < 0) or (mutation_prob > 1):
         raise Exception("""mutation_prob must be between 0 and 1.""")
 
-    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
-       or (max_attempts < 0):
+    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) or (
+        max_attempts < 0
+    ):
         raise Exception("""max_attempts must be a positive integer.""")
 
-    if (not isinstance(max_iters, int) and max_iters != np.inf
-            and not max_iters.is_integer()) or (max_iters < 0):
+    if (
+        not isinstance(max_iters, int)
+        and max_iters != np.inf
+        and not max_iters.is_integer()
+    ) or (max_iters < 0):
         raise Exception("""max_iters must be a positive integer.""")
 
     # Set random seed
@@ -419,8 +458,7 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
 
         for _ in range(pop_size):
             # Select parents
-            selected = np.random.choice(pop_size, size=2,
-                                        p=problem.get_mate_probs())
+            selected = np.random.choice(pop_size, size=2, p=problem.get_mate_probs())
             parent_1 = problem.get_population()[selected[0]]
             parent_2 = problem.get_population()[selected[1]]
 
@@ -446,7 +484,7 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
         if curve:
             fitness_curve.append(problem.get_fitness())
 
-    best_fitness = problem.get_maximize()*problem.get_fitness()
+    best_fitness = problem.get_maximize() * problem.get_fitness()
     best_state = problem.get_state()
 
     if curve:
@@ -455,8 +493,16 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
     return best_state, best_fitness
 
 
-def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
-          max_iters=np.inf, curve=False, random_state=None, fast_mimic=False):
+def mimic(
+    problem,
+    pop_size=200,
+    keep_pct=0.2,
+    max_attempts=10,
+    max_iters=np.inf,
+    curve=False,
+    random_state=None,
+    fast_mimic=False,
+):
     """Use MIMIC to find the optimum for a given optimization problem.
 
     Parameters
@@ -505,7 +551,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     ----
     MIMIC cannot be used for solving continuous-state optimization problems.
     """
-    if problem.get_prob_type() == 'continuous':
+    if problem.get_prob_type() == "continuous":
         raise Exception("""problem type must be discrete or tsp.""")
 
     if pop_size < 0:
@@ -519,12 +565,16 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     if (keep_pct < 0) or (keep_pct > 1):
         raise Exception("""keep_pct must be between 0 and 1.""")
 
-    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
-       or (max_attempts < 0):
+    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) or (
+        max_attempts < 0
+    ):
         raise Exception("""max_attempts must be a positive integer.""")
 
-    if (not isinstance(max_iters, int) and max_iters != np.inf
-            and not max_iters.is_integer()) or (max_iters < 0):
+    if (
+        not isinstance(max_iters, int)
+        and max_iters != np.inf
+        and not max_iters.is_integer()
+    ) or (max_iters < 0):
         raise Exception("""max_iters must be a positive integer.""")
 
     # Set random seed
@@ -574,7 +624,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         if curve:
             fitness_curve.append(problem.get_fitness())
 
-    best_fitness = problem.get_maximize()*problem.get_fitness()
+    best_fitness = problem.get_maximize() * problem.get_fitness()
     best_state = problem.get_state().astype(int)
 
     if curve:
