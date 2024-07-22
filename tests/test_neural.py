@@ -6,9 +6,6 @@
 import unittest
 import numpy as np
 
-# The following functions/classes are not automatically imported at
-# initialization, so must be imported explicitly from neural.py and
-# activation.py.
 from mlrose.neural import (
     flatten_weights,
     unflatten_weights,
@@ -49,7 +46,6 @@ class TestNeural(unittest.TestCase):
     @staticmethod
     def test_unflatten_weights():
         """Test unflatten_weights function"""
-
         x = np.arange(12)
         y = np.arange(6)
         z = np.arange(16)
@@ -58,7 +54,7 @@ class TestNeural(unittest.TestCase):
         b = np.reshape(y, (3, 2))
         c = np.reshape(z, (2, 8))
 
-        flat = list(x) + list(y) + list(z)
+        flat = np.asarray(list(x) + list(y) + list(z))
         nodes = [4, 3, 2, 8]
         weights = unflatten_weights(flat, nodes)
 
