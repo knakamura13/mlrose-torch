@@ -4,6 +4,7 @@
 # License: BSD 3 clause
 
 import unittest
+
 from mlrose import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
 
 

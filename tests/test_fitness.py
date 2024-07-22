@@ -5,6 +5,7 @@
 
 import unittest
 import numpy as np
+
 from mlrose import (
     OneMax,
     FlipFlop,

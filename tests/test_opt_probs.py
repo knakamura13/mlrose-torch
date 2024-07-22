@@ -7,10 +7,6 @@ import unittest
 import numpy as np
 
 from mlrose import OneMax, DiscreteOpt, ContinuousOpt, TSPOpt
-
-# The following functions/classes are not automatically imported at
-# initialization, so must be imported explicitly from neural.py,
-# activation.py and opt_probs.py
 from mlrose.neural import NetworkWeights
 from mlrose.activation import identity
 from mlrose.opt_probs import OptProb

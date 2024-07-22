@@ -5,6 +5,7 @@
 
 import unittest
 import numpy as np
+
 from mlrose import (
     OneMax,
     DiscreteOpt,
@@ -304,7 +305,11 @@ class TestAlgorithms(unittest.TestCase):
         fast mimic"""
         problem = DiscreteOpt(5, OneMax(), maximize=True)
         best_state, best_fitness = mimic(
-            problem, pop_size=1000, max_attempts=1000, fast_mimic=True, random_state=SEED
+            problem,
+            pop_size=1000,
+            max_attempts=1000,
+            fast_mimic=True,
+            random_state=SEED,
         )
 
         x = np.array([1, 1, 1, 1, 1])

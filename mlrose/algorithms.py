@@ -4,6 +4,7 @@
 # License: BSD 3 clause
 
 import numpy as np
+
 from .opt_probs import DiscreteOpt, ContinuousOpt, TSPOpt
 from .decay import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
 
@@ -272,13 +273,13 @@ def simulated_annealing(
 
 
 def genetic_alg(
-        problem: DiscreteOpt | ContinuousOpt | TSPOpt,
-        pop_size: int = 200,
-        mutation_prob: float = 0.1,
-        max_attempts: int = 10,
-        max_iters: int | float = np.inf,
-        curve: bool = False,
-        random_state: int = None,
+    problem: DiscreteOpt | ContinuousOpt | TSPOpt,
+    pop_size: int = 200,
+    mutation_prob: float = 0.1,
+    max_attempts: int = 10,
+    max_iters: int | float = np.inf,
+    curve: bool = False,
+    random_state: int = None,
 ) -> tuple[np.ndarray, float] | tuple[np.ndarray, float, np.ndarray]:
     """Use a standard genetic algorithm to find the optimum for a given optimization problem.
 
@@ -339,9 +340,13 @@ def genetic_alg(
         iters += 1
         problem.eval_mate_probs()
 
-        selected = np.random.choice(pop_size, size=(pop_size, 2), p=problem.get_mate_probs())
+        selected = np.random.choice(
+            pop_size, size=(pop_size, 2), p=problem.get_mate_probs()
+        )
         parents = problem.get_population()[selected]
-        children = np.array([problem.reproduce(p[0], p[1], mutation_prob) for p in parents])
+        children = np.array(
+            [problem.reproduce(p[0], p[1], mutation_prob) for p in parents]
+        )
 
         problem.set_population(children)
 
