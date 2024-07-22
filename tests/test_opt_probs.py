@@ -738,7 +738,7 @@ class TestContinuousOpt(unittest.TestCase):
 
         child = problem.reproduce(father, mother, mutation_prob=1)
 
-        assert len(child) == 5 and sum(child) > 0 and sum(child) < 5
+        assert len(child) == 5 and 0 < sum(child) < 5
 
     @staticmethod
     def test_reproduce_mut1_range_gt_step():

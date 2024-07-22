@@ -1,4 +1,4 @@
-""" Classes for defining optimization problem objects."""
+"""Classes for defining optimization problem objects."""
 
 # Author: Genevieve Hayes
 # License: BSD 3 clause
@@ -25,7 +25,6 @@ class OptProb:
     """
 
     def __init__(self, length, fitness_fn, maximize=True):
-
         if length < 0:
             raise Exception("""length must be a positive integer.""")
         elif not isinstance(length, int):
@@ -36,18 +35,14 @@ class OptProb:
         else:
             self.length = length
 
-        self.state = np.array([0] * self.length)
+        self.state = np.zeros(self.length)
         self.neighbors = []
         self.fitness_fn = fitness_fn
         self.fitness = 0
         self.population = []
         self.pop_fitness = []
         self.mate_probs = []
-
-        if maximize:
-            self.maximize = 1.0
-        else:
-            self.maximize = -1.0
+        self.maximize = 1.0 if maximize else -1.0
 
     def best_child(self):
         """Return the best state in the current population.
@@ -57,9 +52,7 @@ class OptProb:
         best: np.ndarray
             State vector defining best child.
         """
-        best = self.population[np.argmax(self.pop_fitness)]
-
-        return best
+        return self.population[np.argmax(self.pop_fitness)]
 
     def best_neighbor(self):
         """Return the best neighbor of current state.
@@ -69,15 +62,8 @@ class OptProb:
         best: np.ndarray
             State vector defining best neighbor.
         """
-        fitness_list = []
-
-        for neigh in self.neighbors:
-            fitness = self.eval_fitness(neigh)
-            fitness_list.append(fitness)
-
-        best = self.neighbors[np.argmax(fitness_list)]
-
-        return best
+        fitness_list = [self.eval_fitness(neigh) for neigh in self.neighbors]
+        return self.neighbors[np.argmax(fitness_list)]
 
     def eval_fitness(self, state: np.ndarray):
         """Evaluate the fitness of a state vector.
@@ -94,25 +80,20 @@ class OptProb:
         """
         if len(state) != self.length:
             raise Exception("state length must match problem length")
-
-        fitness = self.maximize * self.fitness_fn.evaluate(state)
-
-        return fitness
+        return self.maximize * self.fitness_fn.evaluate(state)
 
     def eval_mate_probs(self):
         """
         Calculate the probability of each member of the population reproducing.
         """
         pop_fitness = np.copy(self.pop_fitness)
-
-        # Set -1*inf values to 0 to avoid dividing by sum of infinity.
-        # This forces mate_probs for these pop members to 0.
         pop_fitness[pop_fitness == -1.0 * np.inf] = 0
 
-        if np.sum(pop_fitness) == 0:
+        total_fitness = np.sum(pop_fitness)
+        if total_fitness == 0:
             self.mate_probs = np.ones(len(pop_fitness)) / len(pop_fitness)
         else:
-            self.mate_probs = pop_fitness / np.sum(pop_fitness)
+            self.mate_probs = pop_fitness / total_fitness
 
     def get_fitness(self):
         """Return the fitness of the current state vector.
@@ -196,15 +177,7 @@ class OptProb:
             Numpy array containing new population.
         """
         self.population = new_population
-
-        # Calculate fitness
-        pop_fitness = []
-
-        for i in range(len(self.population)):
-            fitness = self.eval_fitness(self.population[i])
-            pop_fitness.append(fitness)
-
-        self.pop_fitness = np.array(pop_fitness)
+        self.pop_fitness = np.array([self.eval_fitness(ind) for ind in new_population])
 
     def set_state(self, new_state: np.ndarray):
         """
@@ -217,123 +190,73 @@ class OptProb:
             New state vector value.
         """
         if len(new_state) != self.length:
-            raise Exception("""new_state length must match problem length""")
-
+            raise Exception("new_state length must match problem length")
         self.state = new_state
         self.fitness = self.eval_fitness(self.state)
 
 
 class DiscreteOpt(OptProb):
-    """Class for defining discrete-state optimization problems.
-
-    Parameters
-    ----------
-    length: int
-        Number of elements in state vector.
-
-    fitness_fn: fitness function object
-        Object to implement fitness function for optimization.
-
-    maximize: bool, default: True
-        Whether to maximize the fitness function.
-        Set :code:`False` for minimization problem.
-
-    max_val: int, default: 2
-        Number of unique values that each element in the state vector
-        can take. Assumes values are integers in the range 0 to
-        (max_val - 1), inclusive.
-    """
-
     def __init__(self, length, fitness_fn, maximize=True, max_val=2):
-
-        OptProb.__init__(self, length, fitness_fn, maximize)
+        super().__init__(length, fitness_fn, maximize)
 
         if self.fitness_fn.get_prob_type() == "continuous":
             raise Exception(
-                """fitness_fn must have problem type 'discrete',"""
-                + """ 'either' or 'tsp'. Define problem as"""
-                + """ ContinuousOpt problem or use alternative"""
-                + """ fitness function."""
+                "fitness_fn must have problem type 'discrete', 'either' or 'tsp'. "
+                "Define problem as ContinuousOpt problem or use alternative fitness function."
             )
 
         if max_val < 0:
-            raise Exception("""max_val must be a positive integer.""")
+            raise Exception("max_val must be a positive integer.")
         elif not isinstance(max_val, int):
             if max_val.is_integer():
                 self.max_val = int(max_val)
             else:
-                raise Exception("""max_val must be a positive integer.""")
+                raise Exception("max_val must be a positive integer.")
         else:
             self.max_val = max_val
 
-        self.keep_sample = []
+        self.keep_sample = np.array([])
         self.node_probs = np.zeros([self.length, self.max_val, self.max_val])
-        self.parent_nodes = []
-        self.sample_order = []
+        self.parent_nodes = np.array([])
+        self.sample_order = np.array([])
         self.prob_type = "discrete"
         self.mimic_speed = False
 
     def eval_node_probs(self):
         """Update probability density estimates."""
         if not self.mimic_speed:
-            # Create mutual info matrix
-            mutual_info = np.zeros([self.length, self.length])
+            mutual_info = np.zeros((self.length, self.length))
             for i in range(self.length - 1):
                 for j in range(i + 1, self.length):
                     mutual_info[i, j] = -1 * mutual_info_score(
                         self.keep_sample[:, i], self.keep_sample[:, j]
                     )
-
-        elif self.mimic_speed:
-            # Set ignore error to ignore dividing by zero
+        else:
             np.seterr(divide="ignore", invalid="ignore")
-
-            # get length of the sample which survived from mimic iteration
             len_sample_kept = self.keep_sample.shape[0]
-            # get the length of the bit sequence / problem size
             len_prob = self.keep_sample.shape[1]
 
-            # Expand the matrices to so each row corresponds to a row by row
-            # combination of the list of samples
-            permuted_rows = np.repeat(self.keep_sample, self.length)
-            permuted_rows = np.reshape(
-                permuted_rows, (len_sample_kept, len_prob * len_prob)
+            permuted_rows = np.repeat(self.keep_sample, self.length).reshape(
+                (len_sample_kept, len_prob * len_prob)
             )
-            duplicated_rows = np.hstack(([self.keep_sample] * len_prob))
+            duplicated_rows = np.hstack([self.keep_sample] * len_prob)
 
-            # Compute the mutual information matrix in bulk
-            # This is done by iterating through the list of possible feature
-            # values ((max_val-1)^2).
-            # For example, a binary string would go through 00 01 10 11, for a
-            # total of 4 iterations.
-
-            # First initialize the mutual info matrix.
             mutual_info_vectorized = np.zeros([self.length * self.length])
-            # Pre-compute the clusters U and V which gets computed multiple
-            # times in the inner loop.
             cluster_U = {}
             cluster_V = {}
             cluster_U_sum = {}
             cluster_V_sum = {}
-            for i in range(0, self.max_val):
+            for i in range(self.max_val):
                 cluster_U[i] = duplicated_rows == i
                 cluster_V[i] = permuted_rows == i
                 cluster_U_sum[i] = np.sum(duplicated_rows == i, axis=0)
                 cluster_V_sum[i] = np.sum(permuted_rows == i, axis=0)
 
-            # Compute the mutual information for all sample to
-            # sample combination.
-            # Done for each feature combination i & j ((max_val-1)^2)
-            for i in range(0, self.max_val):
-                for j in range(0, self.max_val):
-                    # |U_i AND V_j|/N Length of cluster matching for feature
-                    # pair i j over sample length N
-                    # This is the first term in the MI computation
-                    MI_first_term = np.sum(cluster_U[i] * cluster_V[j], axis=0)
-                    MI_first_term = np.divide(MI_first_term, len_sample_kept)
-
-                    # compute the second term of the MI matrix
-                    # Length |U_i||V_j|, for the particular feature pair
+            for i in range(self.max_val):
+                for j in range(self.max_val):
+                    MI_first_term = (
+                        np.sum(cluster_U[i] * cluster_V[j], axis=0) / len_sample_kept
+                    )
                     UV_length = cluster_U_sum[i] * cluster_V_sum[j]
                     MI_second_term = (
                         np.log(MI_first_term)
@@ -341,54 +264,30 @@ class DiscreteOpt(OptProb):
                         + np.log(len_sample_kept)
                     )
 
-                    # remove the nans and negative infinity, there shouldn't
-                    # be any
                     MI_second_term[np.isnan(MI_second_term)] = 0
                     MI_second_term[np.isneginf(MI_second_term)] = 0
 
-                    # Combine the first and second term
-                    # Add the whole MI matrix for the feature to the previously
-                    # computed values
-                    mutual_info_vectorized = (
-                        mutual_info_vectorized + MI_first_term * MI_second_term
-                    )
+                    mutual_info_vectorized += MI_first_term * MI_second_term
 
-            # Need to multiply by negative to get the mutual information, and
-            # reshape (Full Matrix)
-            mutual_info_full = -1 * np.reshape(
-                mutual_info_vectorized, (self.length, self.length)
+            mutual_info_full = -1 * mutual_info_vectorized.reshape(
+                (self.length, self.length)
             )
-
-            # Only get the upper triangle matrix above the identity row.
             mutual_info = np.triu(mutual_info_full, k=1)
-            # Possible enhancements, currently we are doing double the
-            # computation required.
-            # Pre set the matrix so the computation is only done for rows that
-            # are needed. To do for the future.
 
-        # Find minimum spanning tree of mutual info matrix
         mst = minimum_spanning_tree(csr_matrix(mutual_info))
-
-        # Convert minimum spanning tree to depth first tree with node 0 as root
-        dft = depth_first_tree(csr_matrix(mst.toarray()), 0, directed=False)
-        dft = np.round(dft.toarray(), 10)
-
-        # Determine parent of each node
+        dft = depth_first_tree(csr_matrix(mst.toarray()), 0, directed=False).toarray()
+        dft = np.round(dft, 10)
         parent = np.argmin(dft[:, 1:], axis=0)
-
-        # Get probs
         probs = np.zeros([self.length, self.max_val, self.max_val])
 
-        probs[0, :] = np.histogram(
+        probs[0] = np.histogram(
             self.keep_sample[:, 0], np.arange(self.max_val + 1), density=True
         )[0]
-
         for i in range(1, self.length):
             for j in range(self.max_val):
                 subset = self.keep_sample[
                     np.where(self.keep_sample[:, parent[i - 1]] == j)[0]
                 ]
-
                 if not len(subset):
                     probs[i, j] = 1 / self.max_val
                 else:
@@ -396,27 +295,24 @@ class DiscreteOpt(OptProb):
                         subset[:, i], np.arange(self.max_val + 1), density=True
                     )[0]
 
-        # Update probs and parent
         self.node_probs = probs
         self.parent_nodes = parent
 
     def find_neighbors(self):
         """Find all neighbors of the current state."""
         self.neighbors = []
-
+        state_copy = np.copy(self.state)
         if self.max_val == 2:
             for i in range(self.length):
-                neighbor = np.copy(self.state)
+                neighbor = state_copy.copy()
                 neighbor[i] = np.abs(neighbor[i] - 1)
                 self.neighbors.append(neighbor)
-
         else:
+            vals = np.arange(self.max_val)
             for i in range(self.length):
-                vals = list(np.arange(self.max_val))
-                vals.remove(self.state[i])
-
-                for j in vals:
-                    neighbor = np.copy(self.state)
+                current_val = state_copy[i]
+                for j in vals[vals != current_val]:
+                    neighbor = state_copy.copy()
                     neighbor[i] = j
                     self.neighbors.append(neighbor)
 
@@ -424,180 +320,83 @@ class DiscreteOpt(OptProb):
         """Determine order in which to generate sample vector elements."""
         sample_order = []
         last = [0]
-        parent = np.array(self.parent_nodes)
+        parent = self.parent_nodes
 
         while len(sample_order) < self.length:
-            inds = []
+            idxs = []
 
-            # If last nodes list is empty, select random node than has not
-            # previously been selected
-            if len(last) == 0:
-                inds = [
-                    np.random.choice(
-                        list(set(np.arange(self.length)) - set(sample_order))
-                    )
-                ]
+            if not last:
+                remaining_indices = set(np.arange(self.length)) - set(sample_order)
+                idxs.append(np.random.choice(list(remaining_indices)))
             else:
                 for i in last:
-                    inds += list(np.where(parent == i)[0] + 1)
+                    idxs.extend(np.where(parent == i)[0] + 1)
 
-            sample_order += last
-            last = inds
+            sample_order.extend(last)
+            last = idxs
 
         self.sample_order = sample_order
 
     def find_top_pct(self, keep_pct):
-        """Select samples with fitness in the top keep_pct percentile.
-
-        Parameters
-        ----------
-        keep_pct: float
-            Proportion of samples to keep.
-        """
-        if (keep_pct < 0) or (keep_pct > 1):
-            raise Exception("""keep_pct must be between 0 and 1.""")
-
-        # Determine threshold
+        """Select samples with fitness in the top keep_pct percentile."""
+        if not (0 <= keep_pct <= 1):
+            raise Exception("keep_pct must be between 0 and 1.")
         theta = np.percentile(self.pop_fitness, 100 * (1 - keep_pct))
-
-        # Determine samples for keeping
-        keep_inds = np.where(self.pop_fitness >= theta)[0]
-
-        # Determine sample for keeping
-        self.keep_sample = self.population[keep_inds]
+        keep_idxs = np.where(self.pop_fitness >= theta)[0]
+        self.keep_sample = self.population[keep_idxs]
 
     def get_keep_sample(self):
-        """Return the keep sample.
-
-        Returns
-        -------
-        self.keep_sample: np.ndarray
-            Numpy array containing samples with fitness in the top keep_pct
-            percentile.
-        """
         return self.keep_sample
 
     def get_prob_type(self):
-        """Return the problem type.
-
-        Returns
-        -------
-        self.prob_type: string
-            Returns problem type.
-        """
         return self.prob_type
 
     def random(self):
-        """Return a random state vector.
-
-        Returns
-        -------
-        state: np.ndarray
-            Randomly generated state vector.
-        """
-        state = np.random.randint(0, self.max_val, self.length)
-
-        return state
+        """Return a random state vector."""
+        return np.random.randint(0, self.max_val, self.length)
 
     def random_neighbor(self):
-        """Return random neighbor of current state vector.
-
-        Returns
-        -------
-        neighbor: np.ndarray
-            State vector of random neighbor.
-        """
+        """Return random neighbor of current state vector."""
         neighbor = np.copy(self.state)
         i = np.random.randint(0, self.length)
-
         if self.max_val == 2:
             neighbor[i] = np.abs(neighbor[i] - 1)
-
         else:
             vals = list(np.arange(self.max_val))
             vals.remove(neighbor[i])
             neighbor[i] = vals[np.random.randint(0, self.max_val - 1)]
-
         return neighbor
 
     def random_pop(self, pop_size):
-        """Create a population of random state vectors.
-
-        Parameters
-        ----------
-        pop_size: int
-            Size of population to be created.
-        """
-        if pop_size <= 0:
-            raise Exception("""pop_size must be a positive integer.""")
-        elif not isinstance(pop_size, int):
-            if pop_size.is_integer():
-                pop_size = int(pop_size)
-            else:
-                raise Exception("""pop_size must be a positive integer.""")
-
-        population = []
-        pop_fitness = []
-
-        for _ in range(pop_size):
-            state = self.random()
-            fitness = self.eval_fitness(state)
-
-            population.append(state)
-            pop_fitness.append(fitness)
-
+        """Create a population of random state vectors."""
+        if not isinstance(pop_size, int) or pop_size <= 0:
+            raise Exception("pop_size must be a positive integer.")
+        population = [self.random() for _ in range(pop_size)]
+        pop_fitness = [self.eval_fitness(state) for state in population]
         self.population = np.array(population)
         self.pop_fitness = np.array(pop_fitness)
 
     def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
-        """Create child state vector from two parent state vectors.
-
-        Parameters
-        ----------
-        parent_1: np.ndarray
-            State vector for parent 1.
-        parent_2: np.ndarray
-            State vector for parent 2.
-        mutation_prob: float
-            Probability of a mutation at each state element during
-            reproduction.
-
-        Returns
-        -------
-        child: np.ndarray
-            Child state vector produced from parents 1 and 2.
-        """
+        """Create child state vector from two parent state vectors."""
         if len(parent_1) != self.length or len(parent_2) != self.length:
-            raise Exception("""Lengths of parents must match problem length""")
-
-        if (mutation_prob < 0) or (mutation_prob > 1):
-            raise Exception("""mutation_prob must be between 0 and 1.""")
-
-        # Reproduce parents
+            raise Exception("Lengths of parents must match problem length")
+        if not (0 <= mutation_prob <= 1):
+            raise Exception("mutation_prob must be between 0 and 1.")
         if self.length > 1:
             _n = np.random.randint(self.length - 1)
-            child = np.array([0] * self.length)
-            child[0 : _n + 1] = parent_1[0 : _n + 1]
-            child[_n + 1 :] = parent_2[_n + 1 :]
-        elif np.random.randint(2) == 0:
-            child = np.copy(parent_1)
+            child = np.concatenate([parent_1[: _n + 1], parent_2[_n + 1 :]])
         else:
-            child = np.copy(parent_2)
+            child = np.copy(parent_1 if np.random.randint(2) == 0 else parent_2)
 
-        # Mutate child
         rand = np.random.uniform(size=self.length)
         mutate = np.where(rand < mutation_prob)[0]
-
         if self.max_val == 2:
-            for i in mutate:
-                child[i] = np.abs(child[i] - 1)
-
+            child[mutate] = np.abs(child[mutate] - 1)
         else:
             for i in mutate:
                 vals = list(np.arange(self.max_val))
                 vals.remove(child[i])
                 child[i] = vals[np.random.randint(0, self.max_val - 1)]
-
         return child
 
     def reset(self):
@@ -606,48 +405,23 @@ class DiscreteOpt(OptProb):
         self.fitness = self.eval_fitness(self.state)
 
     def sample_pop(self, sample_size):
-        """Generate new sample from probability density.
-
-        Parameters
-        ----------
-        sample_size: int
-            Size of sample to be generated.
-
-        Returns
-        -------
-        new_sample: np.ndarray
-            Numpy array containing new sample.
-        """
-        if sample_size <= 0:
-            raise Exception("""sample_size must be a positive integer.""")
-        elif not isinstance(sample_size, int):
-            if sample_size.is_integer():
-                sample_size = int(sample_size)
-            else:
-                raise Exception("""sample_size must be a positive integer.""")
-
-        # Initialize new sample matrix
+        """Generate new sample from probability density."""
+        if not isinstance(sample_size, int) or sample_size <= 0:
+            raise Exception("sample_size must be a positive integer.")
         new_sample = np.zeros([sample_size, self.length])
-
-        # Get value of first element in new samples
         new_sample[:, 0] = np.random.choice(
             self.max_val, sample_size, p=self.node_probs[0, 0]
         )
-
-        # Get sample order
         self.find_sample_order()
         sample_order = self.sample_order[1:]
 
-        # Get values for remaining elements in new samples
         for i in sample_order:
             par_ind = self.parent_nodes[i - 1]
-
             for j in range(self.max_val):
-                inds = np.where(new_sample[:, par_ind] == j)[0]
-                new_sample[inds, i] = np.random.choice(
-                    self.max_val, len(inds), p=self.node_probs[i, j]
+                idxs = np.where(new_sample[:, par_ind] == j)[0]
+                new_sample[idxs, i] = np.random.choice(
+                    self.max_val, len(idxs), p=self.node_probs[i, j]
                 )
-
         return new_sample
 
 
@@ -679,29 +453,21 @@ class ContinuousOpt(OptProb):
     def __init__(
         self, length, fitness_fn, maximize=True, min_val=0, max_val=1, step=0.1
     ):
+        super().__init__(length, fitness_fn, maximize=maximize)
 
-        OptProb.__init__(self, length, fitness_fn, maximize=maximize)
-
-        if (self.fitness_fn.get_prob_type() != "continuous") and (
-            self.fitness_fn.get_prob_type() != "either"
-        ):
+        prob_type = self.fitness_fn.get_prob_type()
+        if prob_type not in ["continuous", "either"]:
             raise Exception(
-                "fitness_fn must have problem type 'continuous'"
-                + """ or 'either'. Define problem as"""
-                + """ DiscreteOpt problem or use alternative"""
-                + """ fitness function."""
+                "fitness_fn must have problem type 'continuous' or 'either'. "
+                "Define problem as DiscreteOpt or use alternative fitness function."
             )
 
         if max_val <= min_val:
-            raise Exception("""max_val must be greater than min_val.""")
-
+            raise Exception("max_val must be greater than min_val.")
         if step <= 0:
-            raise Exception("""step size must be positive.""")
-
+            raise Exception("step size must be positive.")
         if (max_val - min_val) < step:
-            raise Exception(
-                """step size must be less than""" + """ (max_val - min_val)."""
-            )
+            raise Exception("step size must be less than (max_val - min_val).")
 
         self.min_val = min_val
         self.max_val = max_val
@@ -709,143 +475,66 @@ class ContinuousOpt(OptProb):
         self.prob_type = "continuous"
 
     def calculate_updates(self):
-        """Calculate gradient descent updates.
-
-        Returns
-        -------
-        updates: list
-            List of back propagation weight updates.
-        """
-        updates = self.fitness_fn.calculate_updates()
-
-        return updates
+        """Calculate gradient descent updates."""
+        return self.fitness_fn.calculate_updates()
 
     def find_neighbors(self):
         """Find all neighbors of the current state."""
-
         self.neighbors = []
 
         for i in range(self.length):
             for j in [-1, 1]:
                 neighbor = np.copy(self.state)
-                neighbor[i] += j * self.step
-
-                if neighbor[i] > self.max_val:
-                    neighbor[i] = self.max_val
-
-                elif neighbor[i] < self.min_val:
-                    neighbor[i] = self.min_val
-
-                if not np.array_equal(np.array(neighbor), self.state):
+                neighbor[i] = np.clip(
+                    neighbor[i] + j * self.step, self.min_val, self.max_val
+                )
+                if not np.array_equal(neighbor, self.state):
                     self.neighbors.append(neighbor)
 
     def get_prob_type(self):
-        """Return the problem type.
-
-        Returns
-        -------
-        self.prob_type: string
-            Returns problem type.
-        """
         return self.prob_type
 
     def random(self):
-        """Return a random state vector.
-
-        Returns
-        -------
-        state: np.ndarray
-            Randomly generated state vector.
-        """
-        state = np.random.uniform(self.min_val, self.max_val, self.length)
-
-        return state
+        """Return a random state vector."""
+        return np.random.uniform(self.min_val, self.max_val, self.length)
 
     def random_neighbor(self):
-        """Return random neighbor of current state vector.
-
-        Returns
-        -------
-        neighbor: np.ndarray
-            State vector of random neighbor.
-        """
+        """Return random neighbor of current state vector."""
         while True:
             neighbor = np.copy(self.state)
-            i = np.random.randint(0, self.length)
-
+            i = np.random.randint(self.length)
             neighbor[i] += self.step * np.random.choice([-1, 1])
-
-            if neighbor[i] > self.max_val:
-                neighbor[i] = self.max_val
-
-            elif neighbor[i] < self.min_val:
-                neighbor[i] = self.min_val
-
-            if not np.array_equal(np.array(neighbor), self.state):
+            neighbor[i] = np.clip(neighbor[i], self.min_val, self.max_val)
+            if not np.array_equal(neighbor, self.state):
                 break
-
         return neighbor
 
     def random_pop(self, pop_size):
-        """Create a population of random state vectors.
+        """Create a population of random state vectors."""
+        if not isinstance(pop_size, int) or pop_size <= 0:
+            raise Exception("pop_size must be a positive integer.")
 
-        Parameters
-        ----------
-        pop_size: int
-            Size of population to be created.
-        """
-        if pop_size <= 0:
-            raise Exception("""pop_size must be a positive integer.""")
-        elif not isinstance(pop_size, int):
-            if pop_size.is_integer():
-                pop_size = int(pop_size)
-            else:
-                raise Exception("""pop_size must be a positive integer.""")
+        population = np.random.uniform(
+            self.min_val, self.max_val, (pop_size, self.length)
+        )
+        pop_fitness = np.array([self.eval_fitness(state) for state in population])
 
-        population = []
-        pop_fitness = []
-
-        for _ in range(pop_size):
-            state = self.random()
-            fitness = self.eval_fitness(state)
-
-            population.append(state)
-            pop_fitness.append(fitness)
-
-        self.population = np.array(population)
-        self.pop_fitness = np.array(pop_fitness)
+        self.population = population
+        self.pop_fitness = pop_fitness
 
     def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
-        """Create child state vector from two parent state vectors.
-
-        Parameters
-        ----------
-        parent_1: np.ndarray
-            State vector for parent 1.
-
-        parent_2: np.ndarray
-            State vector for parent 2.
-
-        mutation_prob: float
-            Probability of a mutation at each state vector element during
-            reproduction.
-
-        Returns
-        -------
-        child: np.ndarray
-            Child state vector produced from parents 1 and 2.
-        """
+        """Create child state vector from two parent state vectors."""
         if len(parent_1) != self.length or len(parent_2) != self.length:
-            raise Exception("""Lengths of parents must match problem length""")
+            raise Exception("Lengths of parents must match problem length")
 
-        if (mutation_prob < 0) or (mutation_prob > 1):
-            raise Exception("""mutation_prob must be between 0 and 1.""")
+        if not (0 <= mutation_prob <= 1):
+            raise Exception("mutation_prob must be between 0 and 1.")
 
         # Reproduce parents
         if self.length > 1:
             _n = np.random.randint(self.length - 1)
-            child = np.array([0.0] * self.length)
-            child[0 : _n + 1] = parent_1[0 : _n + 1]
+            child = np.zeros(self.length, dtype=float)
+            child[: _n + 1] = parent_1[: _n + 1]
             child[_n + 1 :] = parent_2[_n + 1 :]
         elif np.random.randint(2) == 0:
             child = np.copy(parent_1)
@@ -853,11 +542,12 @@ class ContinuousOpt(OptProb):
             child = np.copy(parent_2)
 
         # Mutate child
-        rand = np.random.uniform(size=self.length)
-        mutate = np.where(rand < mutation_prob)[0]
+        if mutation_prob > 0:
+            rand = np.random.uniform(size=self.length)
+            mutate = np.where(rand < mutation_prob)[0]
 
-        for i in mutate:
-            child[i] = np.random.uniform(self.min_val, self.max_val)
+            for i in mutate:
+                child[i] = np.random.uniform(self.min_val, self.max_val)
 
         return child
 
@@ -867,27 +557,10 @@ class ContinuousOpt(OptProb):
         self.fitness = self.eval_fitness(self.state)
 
     def update_state(self, updates):
-        """Update current state given a vector of updates.
-
-        Parameters
-        ----------
-        updates: np.ndarray
-            Update array.
-
-        Returns
-        -------
-        updated_state: np.ndarray
-            Current state adjusted for updates.
-        """
+        """Update current state given a vector of updates."""
         if len(updates) != self.length:
-            raise Exception("""Length of updates must match problem length""")
-
-        updated_state = self.state + updates
-
-        updated_state[updated_state > self.max_val] = self.max_val
-        updated_state[updated_state < self.min_val] = self.min_val
-
-        return updated_state
+            raise Exception("Length of updates must match problem length")
+        return np.clip(self.state + updates, self.min_val, self.max_val)
 
 
 class TSPOpt(DiscreteOpt):
@@ -926,91 +599,53 @@ class TSPOpt(DiscreteOpt):
     def __init__(
         self, length, fitness_fn=None, maximize=False, coords=None, distances=None
     ):
-
         if (fitness_fn is None) and (coords is None) and (distances is None):
             raise Exception(
-                """At least one of fitness_fn, coords and"""
-                + """ distances must be specified."""
+                "At least one of fitness_fn, coords and distances must be specified."
             )
         elif fitness_fn is None:
             fitness_fn = TravellingSales(coords=coords, distances=distances)
 
-        DiscreteOpt.__init__(self, length, fitness_fn, maximize, max_val=length)
+        super().__init__(length, fitness_fn, maximize, max_val=length)
 
         if self.fitness_fn.get_prob_type() != "tsp":
-            raise Exception("""fitness_fn must have problem type 'tsp'.""")
+            raise Exception("fitness_fn must have problem type 'tsp'.")
 
         self.prob_type = "tsp"
 
     def adjust_probs(self, probs):
-        """Normalize a vector of probabilities so that the vector sums to 1.
-
-        Parameters
-        ----------
-        probs: np.ndarray
-            Vector of probabilities that may or may not sum to 1.
-
-        Returns
-        -------
-        adj_probs: np.ndarray
-            Vector of probabilities that sums to 1. Returns a zero vector if
-            sum(probs) = 0.
-        """
+        """Normalize a vector of probabilities so that the vector sums to 1."""
         if np.sum(probs) == 0:
-            adj_probs = np.zeros(np.shape(probs))
-
-        else:
-            adj_probs = probs / np.sum(probs)
-
-        return adj_probs
+            return np.zeros(np.shape(probs))
+        return probs / np.sum(probs)
 
     def find_neighbors(self):
         """Find all neighbors of the current state."""
         self.neighbors = []
-
+        state = self.state
         for node1 in range(self.length - 1):
             for node2 in range(node1 + 1, self.length):
-                neighbor = np.copy(self.state)
-
-                neighbor[node1] = self.state[node2]
-                neighbor[node2] = self.state[node1]
+                neighbor = np.copy(state)
+                neighbor[node1], neighbor[node2] = state[node2], state[node1]
                 self.neighbors.append(neighbor)
 
     def random(self):
-        """Return a random state vector.
-
-        Returns
-        -------
-        state: np.ndarray
-            Randomly generated state vector.
-        """
-        state = np.random.permutation(self.length)
-
-        return state
+        """Return a random state vector."""
+        return np.random.permutation(self.length)
 
     def random_mimic(self):
-        """Generate single MIMIC sample from probability density.
-
-        Returns
-        -------
-        state: np.ndarray
-            State vector of MIMIC random sample.
-        """
+        """Generate single MIMIC sample from probability density."""
         remaining = list(np.arange(self.length))
         state = np.zeros(self.length, dtype=np.int8)
-        sample_order = self.sample_order[1:]
         node_probs = np.copy(self.node_probs)
 
-        # Get value of first element in new sample
         state[0] = np.random.choice(self.length, p=node_probs[0, 0])
         remaining.remove(state[0])
         node_probs[:, :, state[0]] = 0
 
-        # Get sample order
         self.find_sample_order()
         sample_order = self.sample_order[1:]
 
-        # Set values of remaining elements of state
         for i in sample_order:
             par_ind = self.parent_nodes[i - 1]
             par_value = state[par_ind]
@@ -1018,7 +653,6 @@ class TSPOpt(DiscreteOpt):
 
             if np.sum(probs) == 0:
                 next_node = np.random.choice(remaining)
-
             else:
                 adj_probs = self.adjust_probs(probs)
                 next_node = np.random.choice(self.length, p=adj_probs)
@@ -1030,101 +664,46 @@ class TSPOpt(DiscreteOpt):
         return state
 
     def random_neighbor(self):
-        """Return random neighbor of current state vector.
-
-        Returns
-        -------
-        neighbor: np.ndarray
-            State vector of random neighbor.
-        """
+        """Return random neighbor of current state vector."""
         neighbor = np.copy(self.state)
         node1, node2 = np.random.choice(np.arange(self.length), size=2, replace=False)
-
-        neighbor[node1] = self.state[node2]
-        neighbor[node2] = self.state[node1]
-
+        neighbor[node1], neighbor[node2] = neighbor[node2], neighbor[node1]
         return neighbor
 
     def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
-        """Create child state vector from two parent state vectors.
-
-        Parameters
-        ----------
-        parent_1: np.ndarray
-            State vector for parent 1.
-
-        parent_2: np.ndarray
-            State vector for parent 2.
-
-        mutation_prob: float
-            Probability of a mutation at each state element during
-            reproduction.
-
-        Returns
-        -------
-        child: np.ndarray
-            Child state vector produced from parents 1 and 2.
-        """
+        """Create child state vector from two parent state vectors."""
         if len(parent_1) != self.length or len(parent_2) != self.length:
-            raise Exception("""Lengths of parents must match problem length""")
+            raise Exception("Lengths of parents must match problem length")
+        if not (0 <= mutation_prob <= 1):
+            raise Exception("mutation_prob must be between 0 and 1.")
 
-        if (mutation_prob < 0) or (mutation_prob > 1):
-            raise Exception("""mutation_prob must be between 0 and 1.""")
-
-        # Reproduce parents
         if self.length > 1:
             _n = np.random.randint(self.length - 1)
-            child = np.array([0] * self.length)
-            child[0 : _n + 1] = parent_1[0 : _n + 1]
-
-            unvisited = [node for node in parent_2 if node not in parent_1[0 : _n + 1]]
+            child = np.zeros(self.length, dtype=np.int8)
+            child[: _n + 1] = parent_1[0 : _n + 1]
+            unvisited = [node for node in parent_2 if node not in parent_1[: _n + 1]]
             child[_n + 1 :] = unvisited
-        elif np.random.randint(2) == 0:
-            child = np.copy(parent_1)
         else:
-            child = np.copy(parent_2)
+            child = np.copy(parent_1 if np.random.randint(2) == 0 else parent_2)
 
-        # Mutate child
         rand = np.random.uniform(size=self.length)
         mutate = np.where(rand < mutation_prob)[0]
 
         if len(mutate) > 0:
             mutate_perm = np.random.permutation(mutate)
-            temp = np.copy(child)
-
-            for i in range(len(mutate)):
-                child[mutate[i]] = temp[mutate_perm[i]]
+            child[mutate] = child[mutate_perm]
 
         return child
 
     def sample_pop(self, sample_size):
-        """Generate new sample from probability density.
-
-        Parameters
-        ----------
-        sample_size: int
-            Size of sample to be generated.
-
-        Returns
-        -------
-        new_sample: np.ndarray
-            Numpy array containing new sample.
-        """
+        """Generate new sample from probability density."""
         if sample_size <= 0:
-            raise Exception("""sample_size must be a positive integer.""")
+            raise Exception("sample_size must be a positive integer.")
         elif not isinstance(sample_size, int):
             if sample_size.is_integer():
                 sample_size = int(sample_size)
             else:
-                raise Exception("""sample_size must be a positive integer.""")
+                raise Exception("sample_size must be a positive integer.")
 
         self.find_sample_order()
-        new_sample = []
-
-        for _ in range(sample_size):
-            state = self.random_mimic()
-            new_sample.append(state)
-
-        new_sample = np.array(new_sample)
-
-        return new_sample
+        return np.array([self.random_mimic() for _ in range(sample_size)])
