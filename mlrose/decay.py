@@ -41,8 +41,9 @@ class GeomDecay:
         7.73780...
     """
 
-    def __init__(self, init_temp=1.0, decay=0.99, min_temp=0.001):
-
+    def __init__(
+        self, init_temp: float = 1.0, decay: float = 0.99, min_temp: float = 0.001
+    ):
         self.init_temp = init_temp
         self.decay = decay
         self.min_temp = min_temp
@@ -58,20 +59,8 @@ class GeomDecay:
         elif self.min_temp > self.init_temp:
             raise Exception("""init_temp must be greater than min_temp.""")
 
-    def evaluate(self, t):
-        """Evaluate the temperature parameter at time t.
-
-        Parameters
-        ----------
-        t: int
-            Time at which the temperature paramter T is evaluated.
-
-        Returns
-        -------
-        temp: float
-            Temperature parameter at time t.
-        """
-
+    def evaluate(self, t: int) -> float:
+        """Evaluate the temperature parameter at time t."""
         temp = self.init_temp * (self.decay**t)
 
         if temp < self.min_temp:
@@ -115,8 +104,9 @@ class ArithDecay:
         5.25
     """
 
-    def __init__(self, init_temp=1.0, decay=0.0001, min_temp=0.001):
-
+    def __init__(
+        self, init_temp: float = 1.0, decay: float = 0.0001, min_temp: float = 0.001
+    ):
         self.init_temp = init_temp
         self.decay = decay
         self.min_temp = min_temp
@@ -132,20 +122,8 @@ class ArithDecay:
         elif self.min_temp > self.init_temp:
             raise Exception("""init_temp must be greater than min_temp.""")
 
-    def evaluate(self, t):
-        """Evaluate the temperature parameter at time t.
-
-        Parameters
-        ----------
-        t: int
-            Time at which the temperature paramter T is evaluated.
-
-        Returns
-        -------
-        temp: float
-            Temperature parameter at time t.
-        """
-
+    def evaluate(self, t: int) -> float:
+        """Evaluate the temperature parameter at time t."""
         temp = self.init_temp - (self.decay * t)
 
         if temp < self.min_temp:
@@ -189,8 +167,9 @@ class ExpDecay:
        7.78800...
     """
 
-    def __init__(self, init_temp=1.0, exp_const=0.005, min_temp=0.001):
-
+    def __init__(
+        self, init_temp: float = 1.0, exp_const: float = 0.005, min_temp: float = 0.001
+    ):
         self.init_temp = init_temp
         self.exp_const = exp_const
         self.min_temp = min_temp
@@ -206,20 +185,8 @@ class ExpDecay:
         elif self.min_temp > self.init_temp:
             raise Exception("""init_temp must be greater than min_temp.""")
 
-    def evaluate(self, t):
-        """Evaluate the temperature parameter at time t.
-
-        Parameters
-        ----------
-        t: int
-            Time at which the temperature paramter T is evaluated.
-
-        Returns
-        -------
-        temp: float
-            Temperature parameter at time t.
-        """
-
+    def evaluate(self, t: int) -> float:
+        """Evaluate the temperature parameter at time t."""
         temp = self.init_temp * np.exp(-1.0 * self.exp_const * t)
 
         if temp < self.min_temp:
@@ -253,24 +220,10 @@ class CustomSchedule:
         15
     """
 
-    def __init__(self, schedule, **kwargs):
-
+    def __init__(self, schedule: callable, **kwargs):
         self.schedule = schedule
         self.kwargs = kwargs
 
-    def evaluate(self, t):
-        """Evaluate the temperature parameter at time t.
-
-        Parameters
-        ----------
-        t: int
-            Time at which the temperature paramter T is evaluated.
-
-        Returns
-        -------
-        temp: float
-            Temperature parameter at time t.
-        """
-
-        temp = self.schedule(t, **self.kwargs)
-        return temp
+    def evaluate(self, t: int) -> float:
+        """Evaluate the temperature parameter at time t."""
+        return self.schedule(t, **self.kwargs)
