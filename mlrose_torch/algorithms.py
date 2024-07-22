@@ -163,7 +163,10 @@ def random_hill_climb(
             next_fitness = problem.eval_fitness(next_state)
 
             current_fitness = problem.get_fitness()
-            if next_fitness > current_fitness:
+
+            # If best neighbor is an improvement OR equal to current fitness (for plateau traversal),
+            # move to that state and reset attempts counter
+            if next_fitness >= current_fitness:
                 problem.set_state(next_state)
                 attempts = 0
             else:

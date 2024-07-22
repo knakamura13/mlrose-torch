@@ -6,7 +6,7 @@
 import unittest
 import numpy as np
 
-from mlrose import (
+from mlrose_torch import (
     OneMax,
     FlipFlop,
     FourPeaks,
@@ -18,7 +18,7 @@ from mlrose import (
     MaxKColor,
     CustomFitness,
 )
-from mlrose.fitness import n_peaks_head, n_peaks_tail, cont_peaks_max_run
+from mlrose_torch.fitness import n_peaks_head, n_peaks_tail, cont_peaks_max_run
 
 # The above functions are not automatically imported at initialization, so
 # must be imported explicitly from fitness.py.

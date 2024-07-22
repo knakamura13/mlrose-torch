@@ -1,13 +1,14 @@
 __pycache__/*
 tests/__pycache__/*
-mlrose/__pycache__/*
+mlrose_torch/__pycache__/*
 
 build/*
-mlrose.egg-info/*
+mlrose_torch.egg-info/*
 dist/*
 docs/_build/*
 docs/_static/*
 docs/_templates/*
 
+.ipynb_checkpoints/
 .vscode/settings.json
 .idea/

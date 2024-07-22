@@ -43,9 +43,9 @@ class OneMax:
     .. highlight:: python
     .. code-block:: python
 
-        >>> import mlrose
+        >>> import mlrose_torch
         >>> import numpy as np
-        >>> fitness = mlrose.OneMax()
+        >>> fitness = mlrose_torch.OneMax()
         >>> state = np.array([0, 1, 0, 1, 1, 1, 1])
         >>> fitness.evaluate(state)
         5
@@ -77,9 +77,9 @@ class FlipFlop:
     .. highlight:: python
     .. code-block:: python
 
-        >>> import mlrose
+        >>> import mlrose_torch
         >>> import numpy as np
-        >>> fitness = mlrose.FlipFlop()
+        >>> fitness = mlrose_torch.FlipFlop()
         >>> state = np.array([0, 1, 0, 1, 1, 1, 1])
         >>> fitness.evaluate(state)
         3
@@ -128,9 +128,9 @@ class FourPeaks:
     .. highlight:: python
     .. code-block:: python
 
-        >>> import mlrose
+        >>> import mlrose_torch
         >>> import numpy as np
-        >>> fitness = mlrose.FourPeaks(t_pct=0.15)
+        >>> fitness = mlrose_torch.FourPeaks(t_pct=0.15)
         >>> state = np.array([1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0])
         >>> fitness.evaluate(state)
         16
@@ -202,9 +202,9 @@ class SixPeaks:
     .. highlight:: python
     .. code-block:: python
 
-        >>> import mlrose
+        >>> import mlrose_torch
         >>> import numpy as np
-        >>> fitness = mlrose.SixPeaks(t_pct=0.15)
+        >>> fitness = mlrose_torch.SixPeaks(t_pct=0.15)
         >>> state = np.array([0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1])
         >>> fitness.evaluate(state)
         12
@@ -282,9 +282,9 @@ class ContinuousPeaks:
     .. highlight:: python
     .. code-block:: python
 
-        >>> import mlrose
+        >>> import mlrose_torch
         >>> import numpy as np
-        >>> fitness = mlrose.ContinuousPeaks(t_pct=0.15)
+        >>> fitness = mlrose_torch.ContinuousPeaks(t_pct=0.15)
         >>> state = np.array([0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1])
         >>> fitness.evaluate(state)
         17
@@ -352,12 +352,12 @@ class Knapsack:
     .. highlight:: python
     .. code-block:: python
 
-        >>> import mlrose
+        >>> import mlrose_torch
         >>> import numpy as np
         >>> weights = [10, 5, 2, 8, 15]
         >>> values = [1, 2, 3, 4, 5]
         >>> max_weight_pct = 0.6
-        >>> fitness = mlrose.Knapsack(weights, values, max_weight_pct)
+        >>> fitness = mlrose_torch.Knapsack(weights, values, max_weight_pct)
         >>> state = np.array([1, 0, 2, 1, 0])
         >>> fitness.evaluate(state)
         11
@@ -439,16 +439,16 @@ class TravellingSales:
     .. highlight:: python
     .. code-block:: python
 
-        >>> import mlrose
+        >>> import mlrose_torch
         >>> import numpy as np
         >>> coords = [(0, 0), (3, 0), (3, 2), (2, 4), (1, 3)]
         >>> dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
                      (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
-        >>> fitness_coords = mlrose.TravellingSales(coords=coords)
+        >>> fitness_coords = mlrose_torch.TravellingSales(coords=coords)
         >>> state = np.array([0, 1, 4, 3, 2])
         >>> fitness_coords.evaluate(state)
         13.86138...
-        >>> fitness_dists = mlrose.TravellingSales(distances=dists)
+        >>> fitness_dists = mlrose_torch.TravellingSales(distances=dists)
         >>> fitness_dists.evaluate(state)
         29
 
@@ -577,9 +577,9 @@ class Queens:
     .. highlight:: python
     .. code-block:: python
 
-        >>> import mlrose
+        >>> import mlrose_torch
         >>> import numpy as np
-        >>> fitness = mlrose.Queens()
+        >>> fitness = mlrose_torch.Queens()
         >>> state = np.array([1, 4, 1, 3, 5, 5, 2, 7])
         >>> fitness.evaluate(state)
         6
@@ -637,10 +637,10 @@ class MaxKColor:
     .. highlight:: python
     .. code-block:: python
 
-        >>> import mlrose
+        >>> import mlrose_torch
         >>> import numpy as np
         >>> edges = [(0, 1), (0, 2), (0, 4), (1, 3), (2, 0), (2, 3), (3, 4)]
-        >>> fitness = mlrose.MaxKColor(edges)
+        >>> fitness = mlrose_torch.MaxKColor(edges)
         >>> state = np.array([0, 1, 0, 1, 1])
         >>> fitness.evaluate(state)
         3
@@ -689,11 +689,11 @@ class CustomFitness:
     .. highlight:: python
     .. code-block:: python
 
-        >>> import mlrose
+        >>> import mlrose_torch
         >>> import numpy as np
         >>> def cust_fn(state, c): return c*np.sum(state)
         >>> kwargs = {'c': 10}
-        >>> fitness = mlrose.CustomFitness(cust_fn, **kwargs)
+        >>> fitness = mlrose_torch.CustomFitness(cust_fn, **kwargs)
         >>> state = np.array([1, 2, 3, 4, 5])
         >>> fitness.evaluate(state)
         150

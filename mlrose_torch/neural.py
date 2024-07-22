@@ -635,7 +635,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
             else:
                 y_pred = np.eye(self.node_list[-1])[np.argmax(y_pred, axis=1)]
 
-        return y_pred
+        return np.asarray(y_pred)
 
     def get_params(self, deep: bool = False) -> dict:
         return {

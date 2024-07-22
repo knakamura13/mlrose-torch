@@ -72,7 +72,7 @@ Before starting with this example, you will need to import the mlrose and Numpy 
 .. highlight:: python
 .. code-block:: python
 
-	import mlrose
+	import mlrose_torch as mlrose
 	import numpy as np
    
 Define a Fitness Function Object

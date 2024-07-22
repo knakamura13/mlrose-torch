@@ -6,7 +6,7 @@
 import unittest
 import numpy as np
 
-from mlrose.neural import (
+from mlrose_torch.neural import (
     flatten_weights,
     unflatten_weights,
     gradient_descent,
@@ -16,7 +16,7 @@ from mlrose.neural import (
     LogisticRegression,
     LinearRegression,
 )
-from mlrose.activation import identity, sigmoid, softmax
+from mlrose_torch.activation import identity, sigmoid, softmax
 
 SEED = 0
 np.random.seed(SEED)

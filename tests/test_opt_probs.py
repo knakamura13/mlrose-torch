@@ -6,10 +6,10 @@
 import unittest
 import numpy as np
 
-from mlrose import OneMax, DiscreteOpt, ContinuousOpt, TSPOpt
-from mlrose.neural import NetworkWeights
-from mlrose.activation import identity
-from mlrose.opt_probs import OptProb
+from mlrose_torch import OneMax, DiscreteOpt, ContinuousOpt, TSPOpt
+from mlrose_torch.neural import NetworkWeights
+from mlrose_torch.activation import identity
+from mlrose_torch.opt_probs import OptProb
 
 SEED = 0
 np.random.seed(SEED)

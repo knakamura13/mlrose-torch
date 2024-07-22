@@ -6,7 +6,7 @@
 import unittest
 import numpy as np
 
-from mlrose import (
+from mlrose_torch import (
     OneMax,
     DiscreteOpt,
     ContinuousOpt,

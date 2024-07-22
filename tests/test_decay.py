@@ -5,7 +5,7 @@
 
 import unittest
 
-from mlrose import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
+from mlrose_torch import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
 
 
 class TestDecay(unittest.TestCase):

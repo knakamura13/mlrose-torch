@@ -1,7 +1,12 @@
-# mlrose: Machine Learning, Randomized Optimization and SEarch
-mlrose is a Python package for applying some of the most common randomized optimization and search algorithms to a range of different optimization problems, over both discrete- and continuous-valued parameter spaces.
+# mlrose-torch
+mlrose-torch forks the [original work by Genevieve Hayes (i.e., mlrose)](https://github.com/gkhayes/mlrose) and adds 
+PyTorch support (for activation functions) and advanced NumPy vectorization (to replace slow vanilla Python code). 
+Furthermore, Python 3 type hints have been added to all function and method definitions, tests have been made more 
+reliable with the use of random seeds, and code has been cleaned up/refactored wherever possible to improve readability.
 
 ## Project Background
+mlrose is a Python package for applying some of the most common randomized optimization and search algorithms to a range of different optimization problems, over both discrete- and continuous-valued parameter spaces.
+
 mlrose was initially developed to support students of Georgia Tech's OMSCS/OMSA offering of CS 7641: Machine Learning.
 
 It includes implementations of all randomized optimization algorithms taught in this course, as well as functionality to apply these algorithms to integer-string optimization problems, such as N-Queens and the Knapsack problem; continuous-valued optimization problems, such as the neural network weight problem; and tour optimization problems, such as the Travelling Salesperson problem. It also has the flexibility to solve user-defined optimization problems. 
@@ -41,8 +46,11 @@ A Jupyter notebook containing the examples used in the documentation is also ava
 ## Licensing, Authors, Acknowledgements
 mlrose was written by Genevieve Hayes and is distributed under the [3-Clause BSD license](https://github.com/gkhayes/mlrose/blob/master/LICENSE). 
 
-You can cite mlrose in research publications and reports as follows:
+This fork ("mlrose-torch") was written by Kyle Nakamura and distributed under the same license.
+
+You can cite mlrose and mlrose-torch in research publications and reports as follows:
 * Hayes, G. (2019). ***mlrose: Machine Learning, Randomized Optimization and SEarch package for Python***. https://github.com/gkhayes/mlrose. Accessed: *day month year*.
+* Nakamura, K (2024). ***mlrose-torch***. https://github.com/knakamura13/mlrose-torch. Accessed *day month year*.
 
 BibTeX entry:
 ```

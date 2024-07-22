@@ -6,7 +6,7 @@
 import unittest
 import numpy as np
 
-from mlrose.activation import identity, sigmoid, softmax, tanh, relu
+from mlrose_torch.activation import identity, sigmoid, softmax, tanh, relu
 
 
 class TestActivation(unittest.TestCase):

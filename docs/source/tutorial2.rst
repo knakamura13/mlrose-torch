@@ -50,9 +50,9 @@ Before starting with the example, you will need to import the mlrose and Numpy P
 .. highlight:: python
 .. code-block:: python
 
-	import mlrose
-	import numpy as np
-	
+    import mlrose_torch as mlrose
+    import numpy as np
+
 Define a Fitness Function Object
 --------------------------------
 For the TSP in the example, the goal is to find the shortest tour of the eight cities. As a result, the fitness function should calculate the total length of a given tour. This is the fitness definition used in mlrose's pre-defined :code:`TravellingSales()` class.
@@ -119,7 +119,7 @@ In the case of our example, if we choose to specify a list of coordinates, in pl
 
     # Define optimization problem object
     problem_no_fit = mlrose.TSPOpt(length = 8, coords = coords_list, maximize=False)
-	
+
 As with manually defining the fitness function object, if both a list of coordinates and a list of distances are specified in initializing the optimization problem object, then the distance list will be ignored. Furthermore, if a fitness function object is specified in addition to a list of coordinates and/or a list of distances, then the list of coordinates/distances will be ignored.
 
 Select and Run a Randomized Optimization Algorithm
@@ -130,7 +130,7 @@ This time, suppose we wish to use the genetic algorithms with the default parame
 
 .. highlight:: python
 .. code-block:: python
-	
+
     # Solve problem using the genetic algorithm
     best_state, best_fitness = mlrose.genetic_alg(problem_fit, random_state = 2)
 
@@ -152,7 +152,7 @@ As in the 8-Queens example given in the previous tutorial, this solution can pot
 
 .. highlight:: python
 .. code-block:: python
-	
+
     # Solve problem using the genetic algorithm
     best_state, best_fitness = mlrose.genetic_alg(problem_fit, mutation_prob = 0.2, 
                                                   max_attempts = 100, random_state = 2)
@@ -162,7 +162,7 @@ As in the 8-Queens example given in the previous tutorial, this solution can pot
 
     print(best_fitness)
     17.3426175477
-	
+
 This solution is illustrated below and can be shown to be the optimal solution to this problem.
 
 .. image:: pictures/tsp4.jpg

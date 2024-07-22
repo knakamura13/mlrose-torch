@@ -1,27 +1,21 @@
-""" MLROSe setup file."""
+"""MLROSe setup file."""
 
 # Author: Genevieve Hayes
 # License: BSD 3 clause
+# Forked and optimized by Kyle Nakamura
 
 from setuptools import setup
 
 
-def readme():
-    """
-    Function to read the long description for the MLROSe package.
-    """
-    with open("README.md") as _file:
-        return _file.read()
-
-
 setup(
-    name="mlrose",
-    version="1.3.0",
-    description="MLROSe: Machine Learning, Randomized Optimization and" + " Search",
-    long_description=readme(),
+    name="mlrose_torch",
+    version="0.1.0",
+    description="A highly optimized fork of 'MLROSe: Machine Learning, Randomized Optimization and Search', "
+                "now with PyTorch and advanced NumPy vectorization.",
+    long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/gkhayes/mlrose",
-    author="Genevieve Hayes",
+    url="https://github.com/knakamura13/mlrose-torch",
+    author="Kyle Nakamura",
     license="BSD",
     classifiers=[
         "Intended Audience :: Education",
@@ -30,14 +24,18 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Scientific/Engineering :: Mathematics",
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    packages=["mlrose"],
-    install_requires=["numpy", "scipy", "scikit-learn"],
-    python_requires=">=3",
+    packages=["mlrose_torch"],
+    install_requires=["numpy", "scipy", "scikit-learn", "six", "torch", "setuptools"],
+    python_requires=">=3.10",
     zip_safe=False,
+    project_urls={
+        'Original Project': 'https://github.com/gkhayes/mlrose',
+    }
 )

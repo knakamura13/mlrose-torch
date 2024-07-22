@@ -3,12 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-mlrose: Machine Learning, Randomized Optimization and SEarch
+mlrose-torch
 =============================================================
+
+mlrose-torch is a highly optimized fork of mlrose.
 
 mlrose is a Python package for applying some of the most common randomized optimization and search algorithms to a range of different optimization problems, over both discrete- and continuous-valued parameter spaces.
 
-The source code was written by Genevieve Hayes and is available on `GitHub <https://github.com/gkhayes/mlrose>`_.
+The source code for mlrose-torch was written by Kyle Nakamura and is available `GitHub <https://github.com/knakamura13/mlrose-torch>`_.
+
+The original source code for mlrose was written by Genevieve Hayes and is available on `GitHub <https://github.com/gkhayes/mlrose>`_.
 
 User Guide
 ----------

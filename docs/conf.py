@@ -20,14 +20,14 @@ sys.path.insert(0, os.path.abspath("../"))
 
 # -- Project information -----------------------------------------------------
 
-project = "mlrose"
-copyright = "2019, Genevieve Hayes"
-author = "Genevieve Hayes"
+project = "mlrose_torch"
+copyright = "2024, Kyle Nakamura"
+author = "Kyle Nakamura"
 
 # The short X.Y version
 version = ""
 # The full version, including alpha/beta/rc tags
-release = "1.3.0"
+release = "0.1.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -138,7 +138,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "mlrose.tex", "mlrose Documentation", "Genevieve Hayes", "manual"),
+    (master_doc, "mlrose_torch.tex", "mlrose_torch Documentation", "Genevieve Hayes", "manual"),
 ]
 
 
@@ -146,7 +146,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "mlrose", "mlrose Documentation", [author], 1)]
+man_pages = [(master_doc, "mlrose_torch", "mlrose_torch Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -157,10 +157,10 @@ man_pages = [(master_doc, "mlrose", "mlrose Documentation", [author], 1)]
 texinfo_documents = [
     (
         master_doc,
-        "mlrose",
-        "mlrose Documentation",
+        "mlrose_torch",
+        "mlrose_torch Documentation",
         author,
-        "mlrose",
+        "mlrose_torch",
         "One line description of project.",
         "Miscellaneous",
     ),
