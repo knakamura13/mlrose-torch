@@ -1,8 +1,3 @@
-"""Classes for defining optimization problem objects."""
-
-# Author: Genevieve Hayes
-# License: BSD 3 clause
-
 import numpy as np
 from sklearn.metrics import mutual_info_score
 from scipy.sparse import csr_matrix
@@ -24,7 +19,7 @@ class OptProb:
         Set :code:`False` for minimization problem.
     """
 
-    def __init__(self, length, fitness_fn, maximize=True):
+    def __init__(self, length: int, fitness_fn: any, maximize: bool = True) -> None:
         if length < 0:
             raise Exception("""length must be a positive integer.""")
         elif not isinstance(length, int):
@@ -35,57 +30,32 @@ class OptProb:
         else:
             self.length = length
 
-        self.state = np.zeros(self.length)
-        self.neighbors = []
+        self.state: np.ndarray = np.zeros(self.length)
+        self.neighbors: np.ndarray = np.array([])
         self.fitness_fn = fitness_fn
-        self.fitness = 0
-        self.population = []
-        self.pop_fitness = []
-        self.mate_probs = []
-        self.maximize = 1.0 if maximize else -1.0
+        self.fitness: float = 0
+        self.population: np.ndarray = np.array([])
+        self.pop_fitness: np.ndarray = np.array([])
+        self.mate_probs: np.ndarray = np.array([])
+        self.maximize: float = 1.0 if maximize else -1.0
 
-    def best_child(self):
-        """Return the best state in the current population.
-
-        Returns
-        -------
-        best: np.ndarray
-            State vector defining best child.
-        """
+    def best_child(self) -> np.ndarray:
+        """Return the best state in the current population."""
         return self.population[np.argmax(self.pop_fitness)]
 
-    def best_neighbor(self):
-        """Return the best neighbor of current state.
-
-        Returns
-        -------
-        best: np.ndarray
-            State vector defining best neighbor.
-        """
+    def best_neighbor(self) -> np.ndarray:
+        """Return the best neighbor of current state."""
         fitness_list = [self.eval_fitness(neigh) for neigh in self.neighbors]
         return self.neighbors[np.argmax(fitness_list)]
 
-    def eval_fitness(self, state: np.ndarray):
-        """Evaluate the fitness of a state vector.
-
-        Parameters
-        ----------
-        state: np.ndarray
-            State vector for evaluation.
-
-        Returns
-        -------
-        fitness: float
-            Value of fitness function.
-        """
+    def eval_fitness(self, state: np.ndarray) -> float:
+        """Evaluate the fitness of a state vector."""
         if len(state) != self.length:
             raise Exception("state length must match problem length")
         return self.maximize * self.fitness_fn.evaluate(state)
 
-    def eval_mate_probs(self):
-        """
-        Calculate the probability of each member of the population reproducing.
-        """
+    def eval_mate_probs(self) -> None:
+        """Calculate the probability of each member of the population reproducing."""
         pop_fitness = np.copy(self.pop_fitness)
         pop_fitness[pop_fitness == -1.0 * np.inf] = 0
 
@@ -95,100 +65,40 @@ class OptProb:
         else:
             self.mate_probs = pop_fitness / total_fitness
 
-    def get_fitness(self):
-        """Return the fitness of the current state vector.
-
-        Returns
-        -------
-        self.fitness: float
-            Fitness value of current state vector.
-        """
+    def get_fitness(self) -> float:
+        """Return the fitness of the current state vector."""
         return self.fitness
 
-    def get_length(self):
-        """Return the state vector length.
-
-        Returns
-        -------
-        self.length: int
-            Length of state vector.
-        """
+    def get_length(self) -> int:
+        """Return the state vector length."""
         return self.length
 
-    def get_mate_probs(self):
-        """Return the population mate probabilities.
-
-        Returns
-        -------
-        self.mate_probs: np.ndarray.
-            Numpy array containing mate probabilities of the current
-            population.
-        """
+    def get_mate_probs(self) -> np.ndarray:
+        """Return the population mate probabilities."""
         return self.mate_probs
 
-    def get_maximize(self):
-        """Return the maximization multiplier.
-
-        Returns
-        -------
-        self.maximize: int
-            Maximization multiplier.
-        """
+    def get_maximize(self) -> float:
+        """Return the maximization multiplier."""
         return self.maximize
 
-    def get_pop_fitness(self):
-        """Return the current population fitness array.
-
-        Returns
-        -------
-        self.pop_fitness: np.ndarray
-            Numpy array containing the fitness values for the current
-            population.
-        """
+    def get_pop_fitness(self) -> np.ndarray:
+        """Return the current population fitness array."""
         return self.pop_fitness
 
-    def get_population(self):
-        """Return the current population.
-
-        Returns
-        -------
-        self.population: np.ndarray
-            Numpy array containing current population.
-        """
+    def get_population(self) -> np.ndarray:
         return self.population
 
-    def get_state(self):
-        """Return the current state vector.
-
-        Returns
-        -------
-        self.state: np.ndarray
-            Current state vector.
-        """
+    def get_state(self) -> np.ndarray:
+        """Return the current state vector."""
         return self.state
 
-    def set_population(self, new_population):
-        """Change the current population to a specified new population and get
-        the fitness of all members.
-
-        Parameters
-        ----------
-        new_population: np.ndarray
-            Numpy array containing new population.
-        """
+    def set_population(self, new_population: np.ndarray) -> None:
+        """Change the current population to a specified new population and get the fitness of all members."""
         self.population = new_population
         self.pop_fitness = np.array([self.eval_fitness(ind) for ind in new_population])
 
-    def set_state(self, new_state: np.ndarray):
-        """
-        Change the current state vector to a specified value
-        and get its fitness.
-
-        Parameters
-        ----------
-        new_state: np.ndarray
-            New state vector value.
-        """
+    def set_state(self, new_state: np.ndarray) -> None:
+        """Change the current state vector to a specified value and get its fitness."""
         if len(new_state) != self.length:
             raise Exception("new_state length must match problem length")
         self.state = new_state
@@ -196,7 +106,9 @@ class OptProb:
 
 
 class DiscreteOpt(OptProb):
-    def __init__(self, length, fitness_fn, maximize=True, max_val=2):
+    def __init__(
+        self, length: int, fitness_fn: object, maximize: bool = True, max_val: int = 2
+    ) -> None:
         super().__init__(length, fitness_fn, maximize)
 
         if self.fitness_fn.get_prob_type() == "continuous":
@@ -215,14 +127,16 @@ class DiscreteOpt(OptProb):
         else:
             self.max_val = max_val
 
-        self.keep_sample = np.array([])
-        self.node_probs = np.zeros([self.length, self.max_val, self.max_val])
-        self.parent_nodes = np.array([])
-        self.sample_order = np.array([])
-        self.prob_type = "discrete"
-        self.mimic_speed = False
+        self.keep_sample: np.ndarray = np.array([])
+        self.node_probs: np.ndarray = np.zeros(
+            [self.length, self.max_val, self.max_val]
+        )
+        self.parent_nodes: np.ndarray = np.array([])
+        self.sample_order: np.ndarray = np.array([])
+        self.prob_type: str = "discrete"
+        self.mimic_speed: bool = False
 
-    def eval_node_probs(self):
+    def eval_node_probs(self) -> None:
         """Update probability density estimates."""
         if not self.mimic_speed:
             mutual_info = np.zeros((self.length, self.length))
@@ -298,7 +212,7 @@ class DiscreteOpt(OptProb):
         self.node_probs = probs
         self.parent_nodes = parent
 
-    def find_neighbors(self):
+    def find_neighbors(self) -> None:
         """Find all neighbors of the current state."""
         self.neighbors = []
         state_copy = np.copy(self.state)
@@ -316,7 +230,7 @@ class DiscreteOpt(OptProb):
                     neighbor[i] = j
                     self.neighbors.append(neighbor)
 
-    def find_sample_order(self):
+    def find_sample_order(self) -> None:
         """Determine order in which to generate sample vector elements."""
         sample_order = []
         last = [0]
@@ -337,7 +251,7 @@ class DiscreteOpt(OptProb):
 
         self.sample_order = sample_order
 
-    def find_top_pct(self, keep_pct):
+    def find_top_pct(self, keep_pct: float) -> None:
         """Select samples with fitness in the top keep_pct percentile."""
         if not (0 <= keep_pct <= 1):
             raise Exception("keep_pct must be between 0 and 1.")
@@ -345,17 +259,17 @@ class DiscreteOpt(OptProb):
         keep_idxs = np.where(self.pop_fitness >= theta)[0]
         self.keep_sample = self.population[keep_idxs]
 
-    def get_keep_sample(self):
+    def get_keep_sample(self) -> np.ndarray:
         return self.keep_sample
 
-    def get_prob_type(self):
+    def get_prob_type(self) -> str:
         return self.prob_type
 
-    def random(self):
+    def random(self) -> np.ndarray:
         """Return a random state vector."""
         return np.random.randint(0, self.max_val, self.length)
 
-    def random_neighbor(self):
+    def random_neighbor(self) -> np.ndarray:
         """Return random neighbor of current state vector."""
         neighbor = np.copy(self.state)
         i = np.random.randint(0, self.length)
@@ -367,7 +281,7 @@ class DiscreteOpt(OptProb):
             neighbor[i] = vals[np.random.randint(0, self.max_val - 1)]
         return neighbor
 
-    def random_pop(self, pop_size):
+    def random_pop(self, pop_size: int) -> None:
         """Create a population of random state vectors."""
         if not isinstance(pop_size, int) or pop_size <= 0:
             raise Exception("pop_size must be a positive integer.")
@@ -376,7 +290,9 @@ class DiscreteOpt(OptProb):
         self.population = np.array(population)
         self.pop_fitness = np.array(pop_fitness)
 
-    def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
+    def reproduce(
+        self, parent_1: np.ndarray, parent_2: np.ndarray, mutation_prob: float = 0.1
+    ) -> np.ndarray:
         """Create child state vector from two parent state vectors."""
         if len(parent_1) != self.length or len(parent_2) != self.length:
             raise Exception("Lengths of parents must match problem length")
@@ -399,12 +315,12 @@ class DiscreteOpt(OptProb):
                 child[i] = vals[np.random.randint(0, self.max_val - 1)]
         return child
 
-    def reset(self):
+    def reset(self) -> None:
         """Set the current state vector to a random value and get its fitness."""
         self.state = self.random()
         self.fitness = self.eval_fitness(self.state)
 
-    def sample_pop(self, sample_size):
+    def sample_pop(self, sample_size: int) -> np.ndarray:
         """Generate new sample from probability density."""
         if not isinstance(sample_size, int) or sample_size <= 0:
             raise Exception("sample_size must be a positive integer.")
@@ -451,8 +367,14 @@ class ContinuousOpt(OptProb):
     """
 
     def __init__(
-        self, length, fitness_fn, maximize=True, min_val=0, max_val=1, step=0.1
-    ):
+        self,
+        length: int,
+        fitness_fn: object,
+        maximize: bool = True,
+        min_val: float = 0,
+        max_val: float = 1,
+        step: float = 0.1,
+    ) -> None:
         super().__init__(length, fitness_fn, maximize=maximize)
 
         prob_type = self.fitness_fn.get_prob_type()
@@ -472,13 +394,13 @@ class ContinuousOpt(OptProb):
         self.min_val = min_val
         self.max_val = max_val
         self.step = step
-        self.prob_type = "continuous"
+        self.prob_type: str = "continuous"
 
-    def calculate_updates(self):
+    def calculate_updates(self) -> np.ndarray:
         """Calculate gradient descent updates."""
         return self.fitness_fn.calculate_updates()
 
-    def find_neighbors(self):
+    def find_neighbors(self) -> None:
         """Find all neighbors of the current state."""
         self.neighbors = []
 
@@ -491,14 +413,14 @@ class ContinuousOpt(OptProb):
                 if not np.array_equal(neighbor, self.state):
                     self.neighbors.append(neighbor)
 
-    def get_prob_type(self):
+    def get_prob_type(self) -> str:
         return self.prob_type
 
-    def random(self):
+    def random(self) -> np.ndarray:
         """Return a random state vector."""
         return np.random.uniform(self.min_val, self.max_val, self.length)
 
-    def random_neighbor(self):
+    def random_neighbor(self) -> np.ndarray:
         """Return random neighbor of current state vector."""
         while True:
             neighbor = np.copy(self.state)
@@ -509,7 +431,7 @@ class ContinuousOpt(OptProb):
                 break
         return neighbor
 
-    def random_pop(self, pop_size):
+    def random_pop(self, pop_size: int) -> None:
         """Create a population of random state vectors."""
         if not isinstance(pop_size, int) or pop_size <= 0:
             raise Exception("pop_size must be a positive integer.")
@@ -522,7 +444,9 @@ class ContinuousOpt(OptProb):
         self.population = population
         self.pop_fitness = pop_fitness
 
-    def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
+    def reproduce(
+        self, parent_1: np.ndarray, parent_2: np.ndarray, mutation_prob: float = 0.1
+    ) -> np.ndarray:
         """Create child state vector from two parent state vectors."""
         if len(parent_1) != self.length or len(parent_2) != self.length:
             raise Exception("Lengths of parents must match problem length")
@@ -551,12 +475,12 @@ class ContinuousOpt(OptProb):
 
         return child
 
-    def reset(self):
+    def reset(self) -> None:
         """Set the current state vector to a random value and get its fitness."""
         self.state = self.random()
         self.fitness = self.eval_fitness(self.state)
 
-    def update_state(self, updates):
+    def update_state(self, updates: np.ndarray) -> np.ndarray:
         """Update current state given a vector of updates."""
         if len(updates) != self.length:
             raise Exception("Length of updates must match problem length")
@@ -597,8 +521,13 @@ class TSPOpt(DiscreteOpt):
     """
 
     def __init__(
-        self, length, fitness_fn=None, maximize=False, coords=None, distances=None
-    ):
+        self,
+        length: int,
+        fitness_fn: object = None,
+        maximize: bool = False,
+        coords: list[tuple] = None,
+        distances: list[tuple] = None,
+    ) -> None:
         if (fitness_fn is None) and (coords is None) and (distances is None):
             raise Exception(
                 "At least one of fitness_fn, coords and distances must be specified."
@@ -611,15 +540,15 @@ class TSPOpt(DiscreteOpt):
         if self.fitness_fn.get_prob_type() != "tsp":
             raise Exception("fitness_fn must have problem type 'tsp'.")
 
-        self.prob_type = "tsp"
+        self.prob_type: str = "tsp"
 
-    def adjust_probs(self, probs):
+    def adjust_probs(self, probs: np.ndarray) -> np.ndarray:
         """Normalize a vector of probabilities so that the vector sums to 1."""
         if np.sum(probs) == 0:
             return np.zeros(np.shape(probs))
         return probs / np.sum(probs)
 
-    def find_neighbors(self):
+    def find_neighbors(self) -> None:
         """Find all neighbors of the current state."""
         self.neighbors = []
         state = self.state
@@ -629,11 +558,11 @@ class TSPOpt(DiscreteOpt):
                 neighbor[node1], neighbor[node2] = state[node2], state[node1]
                 self.neighbors.append(neighbor)
 
-    def random(self):
+    def random(self) -> np.ndarray:
         """Return a random state vector."""
         return np.random.permutation(self.length)
 
-    def random_mimic(self):
+    def random_mimic(self) -> np.ndarray:
         """Generate single MIMIC sample from probability density."""
         remaining = list(np.arange(self.length))
         state = np.zeros(self.length, dtype=np.int8)
@@ -663,14 +592,16 @@ class TSPOpt(DiscreteOpt):
 
         return state
 
-    def random_neighbor(self):
+    def random_neighbor(self) -> np.ndarray:
         """Return random neighbor of current state vector."""
         neighbor = np.copy(self.state)
         node1, node2 = np.random.choice(np.arange(self.length), size=2, replace=False)
         neighbor[node1], neighbor[node2] = neighbor[node2], neighbor[node1]
         return neighbor
 
-    def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
+    def reproduce(
+        self, parent_1: np.ndarray, parent_2: np.ndarray, mutation_prob: float = 0.1
+    ) -> np.ndarray:
         """Create child state vector from two parent state vectors."""
         if len(parent_1) != self.length or len(parent_2) != self.length:
             raise Exception("Lengths of parents must match problem length")
@@ -695,7 +626,7 @@ class TSPOpt(DiscreteOpt):
 
         return child
 
-    def sample_pop(self, sample_size):
+    def sample_pop(self, sample_size: int) -> np.ndarray:
         """Generate new sample from probability density."""
         if sample_size <= 0:
             raise Exception("sample_size must be a positive integer.")
