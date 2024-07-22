@@ -8,34 +8,24 @@ import numpy as np
 
 def n_peaks_head(b: int, x: np.ndarray) -> int:
     """Determine the number of leading b's in vector x."""
-    return np.argmax(x != b)
+    return np.argmax(x != b) if np.any(x != b) else len(x)
 
 
 def n_peaks_tail(b: int, x: np.ndarray) -> int:
     """Determine the number of trailing b's in vector x."""
-    return np.argmax(x[::-1] != b)
+    return np.argmax(x[::-1] != b) if np.any(x[::-1] != b) else len(x)
 
 
 def cont_peaks_max_run(b: int, x: np.ndarray) -> int:
     """Determine the length of the maximum run of b's in vector x."""
-    # Create a boolean array where True represents the value b
-    bool_arr = np.array(x == b, dtype=int)
+    bool_arr = x == b
+    if not np.any(bool_arr):
+        return 0
 
-    # Find the indices where the value changes
-    diff = np.diff(bool_arr)
-
-    # Identify the start and end of runs of b's
-    run_starts = np.where(diff == 1)[0] + 1
-    run_ends = np.where(diff == -1)[0] + 1
-
-    # Handle the case where the array starts or ends with b
-    if bool_arr[0]:
-        run_starts = np.insert(run_starts, 0, 0)
-    if bool_arr[-1]:
-        run_ends = np.append(run_ends, len(x))
-
-    # Calculate the lengths of the runs
-    run_lengths = run_ends - run_starts
+    # Calculate the lengths of consecutive runs of b
+    padded = np.concatenate(([False], bool_arr, [False]))
+    diffs = np.diff(padded.astype(int))
+    run_lengths = np.where(diffs == -1)[0] - np.where(diffs == 1)[0]
 
     return run_lengths.max() if run_lengths.size > 0 else 0
 
@@ -104,13 +94,7 @@ class FlipFlop:
 
     def evaluate(self, state: np.ndarray) -> float:
         """Evaluate the fitness of a state vector."""
-        fitness = 0
-
-        for i in range(1, len(state)):
-            if state[i] != state[i - 1]:
-                fitness += 1
-
-        return fitness
+        return np.sum(np.diff(state) != 0)
 
     def get_prob_type(self) -> str:
         """Return the problem type ('discrete', 'continuous', 'tsp', or 'either')."""
@@ -264,10 +248,7 @@ class SixPeaks:
             _r = _n
             _max_score = max(tail_1, head_0)
 
-        # Evaluate function
-        fitness = _max_score + _r
-
-        return fitness
+        return _max_score + _r
 
     def get_prob_type(self) -> str:
         """Return the problem type ('discrete', 'continuous', 'tsp', or 'either')."""
@@ -331,12 +312,8 @@ class ContinuousPeaks:
         max_1 = cont_peaks_max_run(1, state)
 
         # Calculate R(X, T)
-        if max_0 > _t and max_1 > _t:
-            _r = _n
-        else:
-            _r = 0
+        _r = _n if max_0 > _t and max_1 > _t else 0
 
-        # Evaluate function
         return max(max_0, max_1) + _r
 
     def get_prob_type(self) -> str:
@@ -622,22 +599,21 @@ class Queens:
 
     def evaluate(self, state: np.ndarray) -> float:
         """Evaluate the fitness of a state vector."""
-        fitness = 0
-
-        for i in range(len(state) - 1):
-            for j in range(i + 1, len(state)):
-                # Check for horizontal attacks
-                if state[j] == state[i]:
-                    fitness += 1
-
-                # Check for diagonal-up attacks
-                elif state[j] == state[i] + (j - i):
-                    fitness += 1
-
-                # Check for diagonal-down attacks
-                elif state[j] == state[i] - (j - i):
-                    fitness += 1
-
+        n = len(state)
+        row_conflicts = np.sum([np.sum(state == state[i]) - 1 for i in range(n)]) // 2
+        diag_up_conflicts = (
+            np.sum(
+                [np.sum(state == state[i] + (np.arange(n) - i)) - 1 for i in range(n)]
+            )
+            // 2
+        )
+        diag_down_conflicts = (
+            np.sum(
+                [np.sum(state == state[i] - (np.arange(n) - i)) - 1 for i in range(n)]
+            )
+            // 2
+        )
+        fitness = row_conflicts + diag_up_conflicts + diag_down_conflicts
         return fitness
 
     def get_prob_type(self) -> str:
@@ -677,20 +653,15 @@ class MaxKColor:
     def __init__(self, edges: list[tuple]):
         # Remove any duplicates from list
         edges = list({tuple(sorted(edge)) for edge in edges})
-
         self.edges = edges
         self.prob_type = "discrete"
 
     def evaluate(self, state: np.ndarray) -> float:
         """Evaluate the fitness of a state vector."""
-        fitness = 0
-
-        for i in range(len(self.edges)):
-            # Check for adjacent nodes of the same color
-            if state[self.edges[i][0]] == state[self.edges[i][1]]:
-                fitness += 1
-
-        return fitness
+        return np.sum(
+            state[[edge[0] for edge in self.edges]]
+            == state[[edge[1] for edge in self.edges]]
+        )
 
     def get_prob_type(self) -> str:
         """Return the problem type ('discrete', 'continuous', 'tsp', or 'either')."""
