@@ -4,6 +4,11 @@ PyTorch support (for activation functions) and advanced NumPy vectorization (to 
 Furthermore, Python 3 type hints have been added to all function and method definitions, tests have been made more 
 reliable with the use of random seeds, and code has been cleaned up/refactored wherever possible to improve readability.
 
+**Disclaimer!**
+
+I forked the original mlrose package because it was slow and buggy, but I forgot mlrose-hiive exists. 
+_You should probably use mlrose-hiive in favor of this package_, mainly because it adds the Runner classes and some extra code examples.
+
 ## Project Background
 mlrose is a Python package for applying some of the most common randomized optimization and search algorithms to a range of different optimization problems, over both discrete- and continuous-valued parameter spaces.
 
